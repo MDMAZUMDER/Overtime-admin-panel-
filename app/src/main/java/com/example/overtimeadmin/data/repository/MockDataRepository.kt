@@ -1,37 +1,8 @@
-// File: app/src/main/java/com/example/overtimeadmin/data/MockData.kt
-package com.example.overtimeadmin.data
+package com.example.overtimeadmin.data.repository
 
-import androidx.compose.ui.graphics.Color
+import com.example.overtimeadmin.data.model.*
 
-data class Employee(
-    val id: Int,
-    val name: String,
-    val department: String,
-    val status: EmployeeStatus,
-    val weeklyOvertime: Double,
-    val initial: String
-)
-
-enum class EmployeeStatus {
-    ACTIVE, ON_BREAK
-}
-
-data class OvertimeRequest(
-    val id: Int,
-    val employeeId: Int,
-    val employeeName: String,
-    val employeeInitial: String,
-    val hours: Double,
-    val date: String,
-    val reason: String,
-    val status: RequestStatus = RequestStatus.PENDING
-)
-
-enum class RequestStatus {
-    PENDING, APPROVED, REJECTED
-}
-
-object MockData {
+object MockDataRepository {
     val employees = listOf(
         Employee(1, "Alex Chen", "Engineering", EmployeeStatus.ACTIVE, 6.5, "AC"),
         Employee(2, "Jamie Rivera", "Product", EmployeeStatus.ACTIVE, 3.2, "JR"),

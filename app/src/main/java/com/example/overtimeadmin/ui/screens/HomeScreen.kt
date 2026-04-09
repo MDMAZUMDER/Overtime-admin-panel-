@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.overtimeadmin.data.MockData
-import com.example.overtimeadmin.data.OvertimeRequest
+import com.example.overtimeadmin.data.model.OvertimeRequest
+import com.example.overtimeadmin.data.repository.MockDataRepository
 import com.example.overtimeadmin.ui.MainViewModel
 import com.example.overtimeadmin.ui.components.SimpleLineChart
 import kotlinx.coroutines.launch
@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 @Composable
 fun HomeScreen(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
     val pendingRequests by viewModel.pendingRequests.collectAsState()
-    val totalHours = MockData.weeklyTrendData.sum()
+    val totalHours = MockDataRepository.weeklyTrendData.sum()
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
@@ -102,7 +102,7 @@ fun HomeScreen(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
                         shape = MaterialTheme.shapes.extraLarge,
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     ) {
-                        SimpleLineChart(data = MockData.weeklyTrendData)
+                        SimpleLineChart(data = MockDataRepository.weeklyTrendData)
                     }
                 }
             }

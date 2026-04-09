@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.overtimeadmin.data.OvertimeRequest
+import com.example.overtimeadmin.data.model.OvertimeRequest
 import com.example.overtimeadmin.ui.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

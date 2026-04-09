@@ -17,8 +17,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.overtimeadmin.data.Employee
-import com.example.overtimeadmin.data.EmployeeStatus
+import com.example.overtimeadmin.data.model.Employee
+import com.example.overtimeadmin.data.model.EmployeeStatus
 import com.example.overtimeadmin.ui.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
