@@ -30,6 +30,9 @@ fun NavGraph(
         composable("profile") {
             ProfileScreen(snackbarHostState)
         }
+        composable("scan") {
+            ScanScreen(onBack = { navController.navigateUp() })
+        }
         composable(
             route = "approvalDetail/{requestId}",
             arguments = listOf(navArgument("requestId") { type = NavType.IntType })

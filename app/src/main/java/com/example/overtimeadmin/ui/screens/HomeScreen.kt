@@ -4,27 +4,32 @@ package com.example.overtimeadmin.ui.screens
 import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.overtimeadmin.data.model.OvertimeRequest
 import com.example.overtimeadmin.data.repository.MockDataRepository
 import com.example.overtimeadmin.ui.MainViewModel
@@ -42,127 +47,125 @@ fun HomeScreen(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
     val sheetState = rememberModalBottomSheetState()
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Dashboard", style = MaterialTheme.typography.titleLarge) },
-                actions = {
-                    IconButton(onClick = {
-                        scope.launch { snackbarHostState.showSnackbar("No new notifications") }
-                    }) {
-                        Icon(Icons.Default.Notifications, contentDescription = null)
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showBottomSheet = true }) {
-                Icon(Icons.Default.Add, contentDescription = null)
-            }
-        }
+        snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            contentPadding = PaddingValues(bottom = 100.dp)
         ) {
-            // Summary Cards
+            // Header Section
             item {
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    item {
+                HomeHeader(onProfileClick = { /* Navigate to Profile */ })
+            }
+
+            // Summary Grid
+            item {
+                Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+                    Text(
+                        "Overview",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
                         SummaryCard(
-                            title = "Pending Approvals",
+                            title = "Pending",
                             value = pendingRequests.size.toString(),
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                            icon = Icons.Default.PendingActions,
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.weight(1f)
                         )
-                    }
-                    item {
                         SummaryCard(
-                            title = "Total Company Hours",
+                            title = "Total Hours",
                             value = String.format("%.1f", totalHours),
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                            icon = Icons.Default.Timer,
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }
+            }
+
+            // Quick Actions
+            item {
+                QuickActionsSection(onActionClick = { 
+                    scope.launch { snackbarHostState.showSnackbar("$it feature coming soon!") }
+                })
             }
 
             // Chart Section
             item {
-                Column {
-                    Text(
-                        "Weekly Overtime Trend",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Card(
-                        shape = MaterialTheme.shapes.extraLarge,
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        SimpleLineChart(data = MockDataRepository.weeklyTrendData)
+                        Text(
+                            "Weekly Trend",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        TextButton(onClick = { }) {
+                            Text("View Details")
+                        }
+                    }
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        )
+                    ) {
+                        Box(modifier = Modifier.padding(16.dp)) {
+                            SimpleLineChart(data = MockDataRepository.weeklyTrendData)
+                        }
                     }
                 }
             }
 
-            // Quick Approval List
+            // Quick Approval List Header
             item {
                 Text(
                     "Quick Approvals",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp)
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
                 )
             }
 
-            items(pendingRequests, key = { it.id }) { request ->
-                SwipeableRequestItem(
-                    request = request,
-                    onApprove = {
-                        viewModel.approveRequest(request.id)
-                        scope.launch { snackbarHostState.showSnackbar("Approved ${request.employeeName}") }
-                    },
-                    onReject = {
-                        viewModel.rejectRequest(request.id)
-                        scope.launch { snackbarHostState.showSnackbar("Rejected ${request.employeeName}") }
+            if (pendingRequests.isEmpty()) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(40.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("All requests handled! 🎉", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                )
-            }
-        }
-
-        if (showBottomSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showBottomSheet = false },
-                sheetState = sheetState,
-                shape = MaterialTheme.shapes.large
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 32.dp, start = 16.dp, end = 16.dp)
-                ) {
-                    ListItem(
-                        headlineContent = { Text("Broadcast Message") },
-                        modifier = Modifier.pointerInput(Unit) {
-                            // Click handling
-                        },
-                        onClick = {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Broadcast sent!")
-                                showBottomSheet = false
+                }
+            } else {
+                items(pendingRequests, key = { it.id }) { request ->
+                    Box(modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp)) {
+                        SwipeableRequestItem(
+                            request = request,
+                            onApprove = {
+                                viewModel.approveRequest(request.id)
+                                scope.launch { snackbarHostState.showSnackbar("Approved ${request.employeeName}") }
+                            },
+                            onReject = {
+                                viewModel.rejectRequest(request.id)
+                                scope.launch { snackbarHostState.showSnackbar("Rejected ${request.employeeName}") }
                             }
-                        }
-                    )
-                    ListItem(
-                        headlineContent = { Text("Generate Report") },
-                        onClick = {
-                            scope.launch {
-                                snackbarHostState.showSnackbar("Report generating...")
-                                showBottomSheet = false
-                            }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -170,22 +173,122 @@ fun HomeScreen(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
 }
 
 @Composable
-fun SummaryCard(title: String, value: String, containerColor: Color) {
-    Card(
+fun HomeHeader(onProfileClick: () -> Unit) {
+    Row(
         modifier = Modifier
-            .width(200.dp)
-            .height(140.dp),
-        shape = MaterialTheme.shapes.extraLarge,
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                "Good Morning,",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                "Admin User",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        AsyncImage(
+            model = "https://picsum.photos/seed/admin/100/100",
+            contentDescription = "Profile",
+            modifier = Modifier
+                .size(56.dp)
+                .clip(CircleShape)
+                .clickable { onProfileClick() },
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@Composable
+fun SummaryCard(
+    title: String,
+    value: String,
+    icon: ImageVector,
+    containerColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.height(120.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f))
-            Text(value, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f),
+                modifier = Modifier.size(24.dp)
+            )
+            Column {
+                Text(
+                    value,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+                Text(
+                    title,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun QuickActionsSection(onActionClick: (String) -> Unit) {
+    Column(modifier = Modifier.padding(top = 24.dp)) {
+        Text(
+            "Quick Actions",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 20.dp, bottom = 12.dp)
+        )
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            val actions = listOf(
+                "Add Employee" to Icons.Default.PersonAdd,
+                "Export PDF" to Icons.Default.PictureAsPdf,
+                "Settings" to Icons.Default.Settings,
+                "Support" to Icons.Default.SupportAgent
+            )
+            items(actions) { (label, icon) ->
+                ActionChip(label, icon, onClick = { onActionClick(label) })
+            }
+        }
+    }
+}
+
+@Composable
+fun ActionChip(label: String, icon: ImageVector, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        modifier = Modifier.height(48.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(label, style = MaterialTheme.typography.labelLarge)
         }
     }
 }
@@ -223,12 +326,32 @@ fun SwipeableRequestItem(
                 )
             }
     ) {
+        // Background Actions
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(Color(0xFF146C2E), Color(0xFFBA1A1A))
+                    )
+                )
+                .padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Default.Check, contentDescription = null, tint = Color.White)
+            Icon(Icons.Default.Close, contentDescription = null, tint = Color.White)
+        }
+
+        // Foreground Content
         Card(
             modifier = Modifier
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .fillMaxWidth(),
-            shape = MaterialTheme.shapes.medium,
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -243,21 +366,33 @@ fun SwipeableRequestItem(
                         .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(request.employeeInitial, color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.Bold)
+                    Text(
+                        request.employeeInitial, 
+                        color = MaterialTheme.colorScheme.onPrimaryContainer, 
+                        fontWeight = FontWeight.Bold
+                    )
                 }
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(request.employeeName, style = MaterialTheme.typography.titleMedium)
-                    Text("${request.hours} hrs • ${request.reason}", style = MaterialTheme.typography.bodySmall, maxLines = 1)
+                    Text(
+                        request.employeeName, 
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "${request.hours} hrs • ${request.reason}", 
+                        style = MaterialTheme.typography.bodySmall, 
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
                 }
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    modifier = Modifier.padding(start = 8.dp)
-                ) {
-                    Text("↔️ Swipe", modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp), fontSize = 10.sp)
-                }
+                Icon(
+                    Icons.Default.ChevronRight, 
+                    contentDescription = null, 
+                    tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                )
             }
         }
     }
 }
+

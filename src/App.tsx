@@ -483,6 +483,22 @@ export default function App() {
           />
         )}
         {activeTab === 'profile' && <Profile onShowSnackbar={showSnackbar} />}
+        {activeTab === 'scan' && (
+          <div className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center">
+            <div className="w-64 h-64 border-2 border-white/50 rounded-[32px] relative">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-full h-0.5 bg-white/30 animate-pulse" />
+              </div>
+            </div>
+            <p className="text-white mt-8 font-medium">Align QR Code within the frame</p>
+            <button 
+              onClick={() => setActiveTab('home')}
+              className="mt-12 px-8 py-3 bg-white/10 text-white rounded-2xl font-bold"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Detail Overlay */}
@@ -513,44 +529,50 @@ export default function App() {
       </AnimatePresence>
 
       {/* Bottom Navigation */}
-      <nav className="m3-bottom-nav">
-        <button 
-          onClick={() => setActiveTab('home')}
-          className={`m3-nav-item ${activeTab === 'home' ? 'm3-nav-item-active' : 'text-zinc-400'}`}
-        >
-          <div className="m3-nav-icon-container">
-            <Zap className="w-6 h-6" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Shop</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('employees')}
-          className={`m3-nav-item ${activeTab === 'employees' ? 'm3-nav-item-active' : 'text-zinc-400'}`}
-        >
-          <div className="m3-nav-icon-container">
-            <Eye className="w-6 h-6" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Explore</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('approvals')}
-          className={`m3-nav-item ${activeTab === 'approvals' ? 'm3-nav-item-active' : 'text-zinc-400'}`}
-        >
-          <div className="m3-nav-icon-container">
-            <Bookmark className="w-6 h-6" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Brands</span>
-        </button>
-        <button 
-          onClick={() => setActiveTab('profile')}
-          className={`m3-nav-item ${activeTab === 'profile' ? 'm3-nav-item-active' : 'text-zinc-400'}`}
-        >
-          <div className="m3-nav-icon-container">
+      <div className="fixed bottom-6 left-6 right-6 h-20 z-50">
+        <div className="absolute inset-0 bg-white rounded-[32px] shadow-2xl border border-zinc-100 flex items-center justify-around px-2">
+          <button 
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'home' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+          >
+            <Home className="w-6 h-6" />
+            <span className="text-[10px] font-bold">Home</span>
+          </button>
+          <button 
+            onClick={() => setActiveTab('employees')}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'employees' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+          >
+            <Search className="w-6 h-6" />
+            <span className="text-[10px] font-bold">Search</span>
+          </button>
+          
+          {/* Central Scan Button Spacer */}
+          <div className="w-16 h-16" />
+
+          <button 
+            onClick={() => setActiveTab('approvals')}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'approvals' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+          >
+            <CheckCircle2 className="w-6 h-6" />
+            <span className="text-[10px] font-bold">History</span>
+          </button>
+          <button 
+            onClick={() => setActiveTab('profile')}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'profile' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+          >
             <User className="w-6 h-6" />
-          </div>
-          <span className="text-[10px] font-bold uppercase tracking-tighter">Profile</span>
+            <span className="text-[10px] font-bold">Profile</span>
+          </button>
+        </div>
+
+        {/* Floating Scan Button */}
+        <button 
+          onClick={() => setActiveTab('scan')}
+          className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-[#6200EE] text-white rounded-full shadow-xl flex items-center justify-center active:scale-95 transition-transform z-[60]"
+        >
+          <Smartphone className="w-8 h-8" />
         </button>
-      </nav>
+      </div>
     </div>
   );
 }
