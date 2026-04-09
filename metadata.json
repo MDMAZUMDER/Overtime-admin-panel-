@@ -1,0 +1,5 @@
+{
+  "name": "Overtime Admin Master",
+  "description": "A production-ready Android application for managing employee overtime, featuring a Material 3 dashboard, custom charts, and swipe-to-approve gestures.",
+  "requestFramePermissions": []
+}

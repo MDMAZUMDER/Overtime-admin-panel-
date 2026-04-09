@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-m3-primary: #006D6D;
+  --color-m3-primary-container: #008080;
+  --color-m3-background: #FDFBF7;
+  --color-m3-surface: #FEF7FF;
+  --color-m3-surface-variant: #F0F0F0;
+  --color-m3-error: #BA1A1A;
+  --color-m3-success: #146C2E;
+  --color-m3-on-primary-container: #FFFFFF;
+  
+  --radius-m3-xl: 28px;
+  --radius-m3-l: 24px;
+  --radius-m3-m: 16px;
+}
+
+@layer base {
+  body {
+    @apply bg-m3-background text-zinc-900 font-sans antialiased;
+    overflow-x: hidden;
+  }
+}
+
+.m3-card {
+  @apply bg-m3-surface rounded-m3-xl p-5 shadow-sm border border-zinc-100;
+}
+
+.m3-fab {
+  @apply fixed bottom-24 right-6 w-14 h-14 bg-m3-primary text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform z-50;
+}
+
+.m3-bottom-nav {
+  @apply fixed bottom-0 left-0 right-0 h-20 bg-m3-surface border-t border-zinc-100 flex items-center justify-around px-2 z-50;
+}
+
+.m3-nav-item {
+  @apply flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors;
+}
+
+.m3-nav-item-active {
+  @apply text-m3-primary font-semibold;
+}
+
+.m3-nav-icon-container {
+  @apply w-16 h-8 rounded-full flex items-center justify-center transition-colors;
+}
+
+.m3-nav-item-active .m3-nav-icon-container {
+  @apply bg-m3-primary/10;
+}
+
