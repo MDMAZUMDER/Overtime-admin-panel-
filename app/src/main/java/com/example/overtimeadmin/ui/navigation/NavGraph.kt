@@ -22,7 +22,7 @@ fun NavGraph(
             HomeScreen(viewModel, snackbarHostState)
         }
         composable("employees") {
-            EmployeesScreen(viewModel)
+            EmployeesScreen(viewModel, navController)
         }
         composable("approvals") {
             ApprovalsScreen(viewModel, navController)
@@ -32,6 +32,13 @@ fun NavGraph(
         }
         composable("scan") {
             ScanScreen(onBack = { navController.navigateUp() })
+        }
+        composable(
+            route = "employeeDetail/{employeeId}",
+            arguments = listOf(navArgument("employeeId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val employeeId = backStackEntry.arguments?.getInt("employeeId") ?: return@composable
+            EmployeeDetailScreen(employeeId, viewModel, navController)
         }
         composable(
             route = "approvalDetail/{requestId}",

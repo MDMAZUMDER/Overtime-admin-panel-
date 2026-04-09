@@ -24,11 +24,30 @@ import {
   ShoppingBag,
   Zap,
   Eye,
-  Bookmark
+  Bookmark,
+  TrendingUp,
+  LogIn
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 import { mockEmployees, initialPendingRequests, weeklyTrendData } from './mockData';
 import { Employee, OvertimeRequest } from './types';
+import { auth, db, handleFirestoreError, OperationType } from './firebase';
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  onAuthStateChanged, 
+  User as FirebaseUser,
+  signOut 
+} from 'firebase/auth';
+import { 
+  collection, 
+  onSnapshot, 
+  doc, 
+  updateDoc, 
+  query, 
+  where,
+  getDocFromServer
+} from 'firebase/firestore';
 
 // --- Components ---
 
@@ -140,7 +159,8 @@ const Dashboard = ({
   requests, 
   onApprove, 
   onReject,
-  onShowSnackbar
+  onShowSnackbar,
+  onLogout
 }: any) => {
   const totalHours = useMemo(() => weeklyTrendData.reduce((a, b) => a + b, 0), []);
 
@@ -148,12 +168,20 @@ const Dashboard = ({
     <div className="pb-24 animate-in fade-in duration-500">
       <header className="flex items-center justify-between p-6 sticky top-0 bg-m3-background/80 backdrop-blur-md z-20">
         <h1 className="text-2xl font-bold text-zinc-900">Dashboard</h1>
-        <button 
-          onClick={() => onShowSnackbar("No new notifications")}
-          className="p-2 rounded-full hover:bg-zinc-100 transition-colors"
-        >
-          <Bell className="w-6 h-6 text-zinc-600" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => onShowSnackbar("No new notifications")}
+            className="p-2 rounded-full hover:bg-zinc-100 transition-colors"
+          >
+            <Bell className="w-6 h-6 text-zinc-600" />
+          </button>
+          <button 
+            onClick={onLogout}
+            className="p-2 rounded-full hover:bg-zinc-100 transition-colors text-red-500"
+          >
+            <LogOut className="w-6 h-6" />
+          </button>
+        </div>
       </header>
 
       <main className="px-6 space-y-8">
@@ -216,9 +244,9 @@ const Dashboard = ({
   );
 };
 
-const Employees = () => {
+const Employees = ({ employees, onSelect }: { employees: Employee[]; onSelect: (emp: Employee) => void }) => {
   const [search, setSearch] = useState("");
-  const filtered = mockEmployees.filter(e => 
+  const filtered = employees.filter(e => 
     e.name.toLowerCase().includes(search.toLowerCase()) || 
     e.department.toLowerCase().includes(search.toLowerCase())
   );
@@ -244,7 +272,11 @@ const Employees = () => {
 
       <div className="px-6 space-y-4">
         {filtered.map(emp => (
-          <div key={emp.id} className="m3-card flex items-center gap-4">
+          <div 
+            key={emp.id} 
+            onClick={() => onSelect(emp)}
+            className="m3-card flex items-center gap-4 cursor-pointer hover:bg-zinc-50 transition-colors"
+          >
             <div className="w-12 h-12 rounded-full bg-m3-primary/10 flex items-center justify-center text-m3-primary font-bold">
               {emp.initial}
             </div>
@@ -266,6 +298,75 @@ const Employees = () => {
           </div>
         ))}
       </div>
+    </div>
+  );
+};
+
+const EmployeeDetail = ({ employee, onBack }: { employee: Employee; onBack: () => void }) => {
+  return (
+    <div className="min-h-screen bg-m3-background animate-in slide-in-from-bottom duration-300 z-50 fixed inset-0 overflow-y-auto pb-12">
+      <header className="flex items-center p-6 sticky top-0 bg-m3-background/80 backdrop-blur-md z-10">
+        <button onClick={onBack} className="p-2 -ml-2 rounded-full hover:bg-zinc-100">
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="ml-4 text-xl font-bold">Employee Profile</h1>
+      </header>
+
+      <main className="px-6">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-24 h-24 rounded-full bg-m3-primary/10 flex items-center justify-center text-3xl font-bold text-m3-primary mb-4 shadow-inner">
+            {employee.initial}
+          </div>
+          <h2 className="text-2xl font-bold text-zinc-900">{employee.name}</h2>
+          <p className="text-zinc-500 font-medium">{employee.department}</p>
+          <div className="mt-3">
+            <span className={`text-xs px-3 py-1 rounded-full font-bold ${
+              employee.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            }`}>
+              {employee.status === 'ACTIVE' ? 'Active' : 'On Break'}
+            </span>
+          </div>
+        </div>
+
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-3 gap-3 mb-8">
+          <div className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm text-center">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Weekly OT</p>
+            <p className="text-lg font-bold text-m3-primary">{employee.weeklyOvertime}h</p>
+          </div>
+          <div className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm text-center">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Efficiency</p>
+            <p className="text-lg font-bold text-green-600">94%</p>
+          </div>
+          <div className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm text-center">
+            <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Rank</p>
+            <p className="text-lg font-bold text-orange-500">#4</p>
+          </div>
+        </div>
+
+        {/* History Section */}
+        <section>
+          <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Recent Overtime History</h3>
+          <div className="space-y-3">
+            {[
+              { date: "Oct 10, 2023", hours: 2.0, reason: "Project deadline support" },
+              { date: "Oct 08, 2023", hours: 1.5, reason: "System maintenance" },
+              { date: "Oct 05, 2023", hours: 3.0, reason: "Client meeting preparation" }
+            ].map((history, idx) => (
+              <div key={idx} className="bg-zinc-50 p-4 rounded-2xl border border-zinc-100 flex items-center gap-4">
+                <div className="p-2 bg-m3-primary/10 rounded-xl">
+                  <TrendingUp className="w-5 h-5 text-m3-primary" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-[10px] font-bold text-zinc-400">{history.date}</p>
+                  <p className="text-sm font-semibold text-zinc-700">{history.reason}</p>
+                </div>
+                <div className="text-sm font-bold text-zinc-900">{history.hours}h</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
   );
 };
@@ -439,26 +540,139 @@ const Profile = ({ onShowSnackbar }: any) => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'home' | 'employees' | 'approvals' | 'profile'>('home');
-  const [requests, setRequests] = useState<OvertimeRequest[]>(initialPendingRequests);
+  const [requests, setRequests] = useState<OvertimeRequest[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedRequest, setSelectedRequest] = useState<OvertimeRequest | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [snackbar, setSnackbar] = useState<string | null>(null);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
+  // Test Connection
+  React.useEffect(() => {
+    async function testConnection() {
+      try {
+        await getDocFromServer(doc(db, 'test', 'connection'));
+      } catch (error) {
+        if(error instanceof Error && error.message.includes('the client is offline')) {
+          console.error("Please check your Firebase configuration.");
+        }
+      }
+    }
+    testConnection();
+  }, []);
+
+  // Auth Listener
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setIsAuthReady(true);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Real-time Data Listeners
+  React.useEffect(() => {
+    if (!isAuthReady || !user) {
+      setRequests([]);
+      setEmployees([]);
+      return;
+    }
+
+    const requestsPath = 'overtime_requests';
+    const qRequests = query(collection(db, requestsPath), where('status', '==', 'PENDING'));
+    const unsubRequests = onSnapshot(qRequests, (snapshot) => {
+      const reqs = snapshot.docs.map(doc => ({ id: Number(doc.id), ...doc.data() } as OvertimeRequest));
+      setRequests(reqs);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, requestsPath);
+    });
+
+    const employeesPath = 'employees';
+    const unsubEmployees = onSnapshot(collection(db, employeesPath), (snapshot) => {
+      const emps = snapshot.docs.map(doc => ({ id: Number(doc.id), ...doc.data() } as Employee));
+      setEmployees(emps);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, employeesPath);
+    });
+
+    return () => {
+      unsubRequests();
+      unsubEmployees();
+    };
+  }, [isAuthReady, user]);
+
+  const login = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      showSnackbar("Login failed");
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      showSnackbar("Logged out");
+    } catch (error) {
+      showSnackbar("Logout failed");
+    }
+  };
 
   const showSnackbar = (msg: string) => {
     setSnackbar(msg);
     setTimeout(() => setSnackbar(null), 3000);
   };
 
-  const approve = (id: number) => {
-    setRequests(prev => prev.filter(r => r.id !== id));
-    setSelectedRequest(null);
-    showSnackbar("Request Approved");
+  const approve = async (id: number) => {
+    const path = `overtime_requests/${id}`;
+    try {
+      await updateDoc(doc(db, 'overtime_requests', id.toString()), { status: 'APPROVED' });
+      setSelectedRequest(null);
+      showSnackbar("Request Approved");
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
   };
 
-  const reject = (id: number) => {
-    setRequests(prev => prev.filter(r => r.id !== id));
-    setSelectedRequest(null);
-    showSnackbar("Request Rejected");
+  const reject = async (id: number) => {
+    const path = `overtime_requests/${id}`;
+    try {
+      await updateDoc(doc(db, 'overtime_requests', id.toString()), { status: 'REJECTED' });
+      setSelectedRequest(null);
+      showSnackbar("Request Rejected");
+    } catch (error) {
+      handleFirestoreError(error, OperationType.UPDATE, path);
+    }
   };
+
+  if (!isAuthReady) {
+    return (
+      <div className="max-w-md mx-auto min-h-screen bg-m3-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-m3-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="max-w-md mx-auto min-h-screen bg-m3-background flex flex-col items-center justify-center p-6 text-center">
+        <div className="w-20 h-20 bg-m3-primary/10 rounded-full flex items-center justify-center mb-6">
+          <LogIn className="w-10 h-10 text-m3-primary" />
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Admin Login</h1>
+        <p className="text-zinc-500 mb-8">Please sign in to manage overtime requests and employees.</p>
+        <button 
+          onClick={login}
+          className="w-full h-14 bg-m3-primary text-white rounded-2xl font-bold shadow-lg shadow-m3-primary/20 flex items-center justify-center gap-3"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" className="w-6 h-6" alt="Google" />
+          Sign in with Google
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-md mx-auto min-h-screen bg-m3-background relative shadow-2xl overflow-hidden">
@@ -470,9 +684,10 @@ export default function App() {
             onApprove={approve} 
             onReject={reject} 
             onShowSnackbar={showSnackbar}
+            onLogout={logout}
           />
         )}
-        {activeTab === 'employees' && <Employees />}
+        {activeTab === 'employees' && <Employees employees={employees} onSelect={setSelectedEmployee} />}
         {activeTab === 'approvals' && (
           <Approvals 
             requests={requests} 
@@ -498,7 +713,7 @@ export default function App() {
         )}
       </div>
 
-      {/* Detail Overlay */}
+      {/* Detail Overlays */}
       <AnimatePresence>
         {selectedRequest && (
           <ApprovalDetail 
@@ -506,6 +721,12 @@ export default function App() {
             onBack={() => setSelectedRequest(null)}
             onApprove={approve}
             onReject={reject}
+          />
+        )}
+        {selectedEmployee && (
+          <EmployeeDetail 
+            employee={selectedEmployee} 
+            onBack={() => setSelectedEmployee(null)}
           />
         )}
       </AnimatePresence>

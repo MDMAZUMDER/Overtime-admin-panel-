@@ -1,0 +1,46 @@
+{
+  "entities": {
+    "Employee": {
+      "title": "Employee",
+      "description": "Employee profile information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "department": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "ON_BREAK"] },
+        "weeklyOvertime": { "type": "number" },
+        "initial": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "employee"] }
+      },
+      "required": ["id", "name", "department", "status"]
+    },
+    "OvertimeRequest": {
+      "title": "OvertimeRequest",
+      "description": "Overtime request submitted by an employee",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "employeeId": { "type": "string" },
+        "employeeName": { "type": "string" },
+        "employeeInitial": { "type": "string" },
+        "hours": { "type": "number" },
+        "date": { "type": "string", "format": "date-time" },
+        "reason": { "type": "string" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
+      },
+      "required": ["id", "employeeId", "employeeName", "hours", "date", "reason", "status"]
+    }
+  },
+  "firestore": {
+    "/employees/{employeeId}": {
+      "schema": "Employee",
+      "description": "Collection of employee profiles"
+    },
+    "/overtime_requests/{requestId}": {
+      "schema": "OvertimeRequest",
+      "description": "Collection of overtime requests"
+    }
+  }
+}

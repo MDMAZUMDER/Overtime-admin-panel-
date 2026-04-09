@@ -1,0 +1,79 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: employees
+// Document ID: {employeeId} (matches auth.uid)
+// Fields:
+//   - name: string (required)
+//   - department: string (required)
+//   - status: string (ACTIVE, ON_BREAK)
+//   - weeklyOvertime: number
+//   - initial: string
+//   - email: string
+//   - role: string (admin, employee)
+//
+// Collection: overtime_requests
+// Document ID: {requestId}
+// Fields:
+//   - employeeId: string (required)
+//   - employeeName: string (required)
+//   - hours: number (required)
+//   - date: string (ISO date)
+//   - reason: string (required)
+//   - status: string (PENDING, APPROVED, REJECTED)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/employees/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == "litoncomar95@gmail.com");
+    }
+
+    // Domain Validators
+    function isValidEmployee(data) {
+      return data.keys().hasAll(['name', 'department', 'status']) &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.department is string && data.department.size() > 0 &&
+             data.status in ['ACTIVE', 'ON_BREAK'];
+    }
+
+    function isValidRequest(data) {
+      return data.keys().hasAll(['employeeId', 'employeeName', 'hours', 'date', 'reason', 'status']) &&
+             data.employeeId is string &&
+             data.employeeName is string &&
+             data.hours is number && data.hours > 0 &&
+             data.date is string &&
+             data.reason is string && data.reason.size() > 0 && data.reason.size() < 1000 &&
+             data.status in ['PENDING', 'APPROVED', 'REJECTED'];
+    }
+
+    // Rules
+    match /employees/{employeeId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(employeeId) && isValidEmployee(request.resource.data) && request.resource.data.role == 'employee';
+      allow update: if isAdmin() || (isOwner(employeeId) && isValidEmployee(request.resource.data) && request.resource.data.role == resource.data.role);
+    }
+
+    match /overtime_requests/{requestId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidRequest(request.resource.data) && request.resource.data.employeeId == request.auth.uid;
+      allow update: if isAdmin() && isValidRequest(request.resource.data);
+      allow delete: if isAdmin();
+    }
+  }
+}

@@ -17,13 +17,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.overtimeadmin.data.model.Employee
 import com.example.overtimeadmin.data.model.EmployeeStatus
 import com.example.overtimeadmin.ui.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmployeesScreen(viewModel: MainViewModel) {
+fun EmployeesScreen(viewModel: MainViewModel, navController: NavController) {
     val employees by viewModel.employees.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
 
@@ -81,16 +82,20 @@ fun EmployeesScreen(viewModel: MainViewModel) {
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(filteredEmployees) { employee ->
-                    EmployeeCard(employee)
+                    EmployeeCard(employee, onClick = {
+                        navController.navigate("employeeDetail/${employee.id}")
+                    })
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmployeeCard(employee: Employee) {
+fun EmployeeCard(employee: Employee, onClick: () -> Unit) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
