@@ -462,9 +462,6 @@ export default function App() {
 
   return (
     <div className="max-w-md mx-auto min-h-screen bg-m3-background relative shadow-2xl overflow-hidden">
-      {/* Simulation Frame Decorator */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-zinc-900 rounded-b-2xl z-50 pointer-events-none" />
-      
       {/* Content */}
       <div className="min-h-screen">
         {activeTab === 'home' && (
