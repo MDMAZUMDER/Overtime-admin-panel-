@@ -10,6 +10,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope

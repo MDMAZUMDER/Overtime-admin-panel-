@@ -3,6 +3,7 @@ package com.example.overtimeadmin.ui.screens
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,8 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +86,7 @@ fun ScanScreen(onBack: () -> Unit) {
                         .clip(CircleShape)
                         .background(Color.White.copy(alpha = 0.1f))
                 ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    androidx.compose.material3.Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                 }
                 
                 Text(
@@ -100,7 +103,7 @@ fun ScanScreen(onBack: () -> Unit) {
                         .clip(CircleShape)
                         .background(Color.White.copy(alpha = 0.1f))
                 ) {
-                    Icon(Icons.Outlined.History, contentDescription = "History", tint = Color.White)
+                    androidx.compose.material3.Icon(Icons.Outlined.History, contentDescription = "History", tint = Color.White)
                 }
             }
 
@@ -171,7 +174,7 @@ fun ScanScreen(onBack: () -> Unit) {
                             .clickable { isFlashOn = !isFlashOn },
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
+                        androidx.compose.material3.Icon(
                             imageVector = if (isFlashOn) Icons.Outlined.FlashlightOn else Icons.Outlined.FlashlightOff,
                             contentDescription = "Flash",
                             tint = Color.White,
@@ -232,7 +235,7 @@ fun ControlItem(icon: ImageVector, label: String, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.clickable { onClick() }
     ) {
-        Icon(icon, contentDescription = label, tint = Color.White, modifier = Modifier.size(24.dp))
+        androidx.compose.material3.Icon(icon, contentDescription = label, tint = Color.White, modifier = Modifier.size(24.dp))
         Text(label, color = Color.White.copy(alpha = 0.6f), fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp))
     }
 }

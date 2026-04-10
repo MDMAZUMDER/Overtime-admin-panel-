@@ -178,8 +178,8 @@ fun HistoryCard(request: OvertimeRequest) {
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                Icons.Default.TrendingUp,
+            androidx.compose.material3.Icon(
+                Icons.Filled.TrendingUp,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)

@@ -19,7 +19,7 @@ fun SimpleLineChart(
     modifier: Modifier = Modifier
 ) {
     val primaryColor = MaterialTheme.colorScheme.primary
-    val surfaceColor = MaterialTheme.colorScheme.onSurfaceVariant
+    val surfaceColor = MaterialTheme.colorScheme.surface
 
     Canvas(
         modifier = modifier
@@ -64,7 +64,7 @@ fun SimpleLineChart(
                 center = point
             )
             drawCircle(
-                color = MaterialTheme.colorScheme.surface,
+                color = surfaceColor,
                 radius = 3.dp.toPx(),
                 center = point
             )
