@@ -1,29 +1,61 @@
 @import "tailwindcss";
 
 @theme {
-  --color-m3-primary: #006D6D;
-  --color-m3-primary-container: #008080;
-  --color-m3-background: #FDFBF7;
-  --color-m3-surface: #FEF7FF;
-  --color-m3-surface-variant: #F0F0F0;
-  --color-m3-error: #BA1A1A;
-  --color-m3-success: #146C2E;
-  --color-m3-on-primary-container: #FFFFFF;
+  --color-m3-primary: var(--m3-primary);
+  --color-m3-primary-container: var(--m3-primary-container);
+  --color-m3-background: var(--m3-background);
+  --color-m3-surface: var(--m3-surface);
+  --color-m3-surface-variant: var(--m3-surface-variant);
+  --color-m3-error: var(--m3-error);
+  --color-m3-success: var(--m3-success);
+  --color-m3-on-primary-container: var(--m3-on-primary-container);
   
   --radius-m3-xl: 28px;
   --radius-m3-l: 24px;
   --radius-m3-m: 16px;
 }
 
+:root {
+  --m3-primary: #3F51B5;
+  --m3-primary-container: #E8EAF6;
+  --m3-background: #F8F9FA;
+  --m3-surface: #FFFFFF;
+  --m3-surface-variant: #E7E0EC;
+  --m3-error: #D32F2F;
+  --m3-success: #2E7D32;
+  --m3-on-primary-container: #1A237E;
+  --zinc-900: #1C1B1F;
+  --zinc-500: #6B7280;
+  --zinc-400: #9CA3AF;
+  --zinc-100: #F3F4F6;
+  --zinc-50: #F9FAFB;
+}
+
+.dark {
+  --m3-primary: #C5CAE9;
+  --m3-primary-container: #283593;
+  --m3-background: #0A0A0A;
+  --m3-surface: #121212;
+  --m3-surface-variant: #2C2C2C;
+  --m3-error: #EF9A9A;
+  --m3-success: #81C784;
+  --m3-on-primary-container: #E8EAF6;
+  --zinc-900: #E6E1E5;
+  --zinc-500: #9CA3AF;
+  --zinc-400: #6B7280;
+  --zinc-100: #2C2C2C;
+  --zinc-50: #1E1E1E;
+}
+
 @layer base {
   body {
-    @apply bg-m3-background text-zinc-900 font-sans antialiased;
+    @apply bg-m3-background text-zinc-900 font-sans antialiased transition-colors duration-300;
     overflow-x: hidden;
   }
 }
 
 .m3-card {
-  @apply bg-m3-surface rounded-m3-xl p-5 shadow-sm border border-zinc-100;
+  @apply bg-m3-surface rounded-m3-xl p-5 shadow-sm border border-zinc-100 transition-colors duration-300;
 }
 
 .m3-fab {
@@ -31,7 +63,7 @@
 }
 
 .m3-bottom-nav {
-  @apply fixed bottom-0 left-0 right-0 h-20 bg-m3-surface border-t border-zinc-100 flex items-center justify-around px-2 z-50;
+  @apply fixed bottom-0 left-0 right-0 h-20 bg-m3-surface border-t border-zinc-100 flex items-center justify-around px-2 z-50 transition-colors duration-300;
 }
 
 .m3-nav-item {

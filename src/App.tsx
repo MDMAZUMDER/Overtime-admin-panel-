@@ -26,7 +26,9 @@ import {
   Eye,
   Bookmark,
   TrendingUp,
-  LogIn
+  LogIn,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
 import { mockEmployees, initialPendingRequests, weeklyTrendData } from './mockData';
@@ -108,7 +110,7 @@ const SwipeableItem = ({
 }) => {
   const x = useMotionValue(0);
   const opacity = useTransform(x, [-150, 0, 150], [0, 1, 0]);
-  const background = useTransform(x, [-150, 0, 150], ['#fee2e2', '#ffffff', '#dcfce7']);
+  const background = useTransform(x, [-150, 0, 150], ['#fee2e2', 'var(--m3-surface)', '#dcfce7']);
 
   const handleDragEnd = (_: any, info: any) => {
     if (info.offset.x > 100) {
@@ -136,7 +138,7 @@ const SwipeableItem = ({
         dragConstraints={{ left: 0, right: 0 }}
         onDragEnd={handleDragEnd}
         style={{ x, background }}
-        className="relative z-10 p-4 bg-white rounded-2xl border border-zinc-100 shadow-sm cursor-grab active:cursor-grabbing flex items-center gap-4"
+        className="relative z-10 p-4 rounded-2xl border border-zinc-100 shadow-sm cursor-grab active:cursor-grabbing flex items-center gap-4 transition-colors duration-300"
       >
         <div className="w-12 h-12 rounded-full bg-m3-primary/10 flex items-center justify-center text-m3-primary font-bold">
           {request.employeeInitial}
@@ -160,7 +162,9 @@ const Dashboard = ({
   onApprove, 
   onReject,
   onShowSnackbar,
-  onLogout
+  onLogout,
+  theme,
+  toggleTheme
 }: any) => {
   const totalHours = useMemo(() => weeklyTrendData.reduce((a, b) => a + b, 0), []);
 
@@ -169,6 +173,12 @@ const Dashboard = ({
       <header className="flex items-center justify-between p-6 sticky top-0 bg-m3-background/80 backdrop-blur-md z-20">
         <h1 className="text-2xl font-bold text-zinc-900">Dashboard</h1>
         <div className="flex items-center gap-2">
+          <button 
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-zinc-100 transition-colors"
+          >
+            {theme === 'light' ? <Moon className="w-6 h-6 text-zinc-600" /> : <Sun className="w-6 h-6 text-zinc-600" />}
+          </button>
           <button 
             onClick={() => onShowSnackbar("No new notifications")}
             className="p-2 rounded-full hover:bg-zinc-100 transition-colors"
@@ -187,11 +197,11 @@ const Dashboard = ({
       <main className="px-6 space-y-8">
         {/* Summary Cards */}
         <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-          <div className="min-w-[200px] h-32 bg-m3-primary-container rounded-m3-xl p-5 flex flex-col justify-between text-white shadow-md">
+          <div className="min-w-[200px] h-32 bg-m3-primary-container rounded-m3-xl p-5 flex flex-col justify-between text-m3-on-primary-container shadow-md transition-colors duration-300">
             <span className="text-xs opacity-80 font-medium uppercase tracking-wider">Pending Approvals</span>
             <span className="text-4xl font-bold">{requests.length}</span>
           </div>
-          <div className="min-w-[200px] h-32 bg-zinc-900 rounded-m3-xl p-5 flex flex-col justify-between text-white shadow-md">
+          <div className="min-w-[200px] h-32 bg-m3-surface-variant rounded-m3-xl p-5 flex flex-col justify-between text-zinc-900 shadow-md transition-colors duration-300">
             <span className="text-xs opacity-80 font-medium uppercase tracking-wider">Total Company Hours</span>
             <span className="text-4xl font-bold">{totalHours.toFixed(1)}</span>
           </div>
@@ -200,7 +210,7 @@ const Dashboard = ({
         {/* Chart */}
         <section>
           <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-4">Weekly Overtime Trend</h3>
-          <div className="bg-white rounded-m3-xl p-2 border border-zinc-100 shadow-sm">
+          <div className="bg-m3-surface rounded-m3-xl p-2 border border-zinc-100 shadow-sm transition-colors duration-300">
             <SimpleLineChart data={weeklyTrendData} />
           </div>
         </section>
@@ -263,7 +273,7 @@ const Employees = ({ employees, onSelect }: { employees: Employee[]; onSelect: (
           <input 
             type="text"
             placeholder="Search by name or department"
-            className="w-full h-14 pl-12 pr-4 bg-white border border-zinc-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-m3-primary/20 transition-all"
+            className="w-full h-14 pl-12 pr-4 bg-m3-surface border border-zinc-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-m3-primary/20 transition-all text-zinc-900"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -330,15 +340,15 @@ const EmployeeDetail = ({ employee, onBack }: { employee: Employee; onBack: () =
 
         {/* Metrics Grid */}
         <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm text-center">
+          <div className="bg-m3-surface p-4 rounded-3xl border border-zinc-100 shadow-sm text-center transition-colors duration-300">
             <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Weekly OT</p>
             <p className="text-lg font-bold text-m3-primary">{employee.weeklyOvertime}h</p>
           </div>
-          <div className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm text-center">
+          <div className="bg-m3-surface p-4 rounded-3xl border border-zinc-100 shadow-sm text-center transition-colors duration-300">
             <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Efficiency</p>
             <p className="text-lg font-bold text-green-600">94%</p>
           </div>
-          <div className="bg-white p-4 rounded-3xl border border-zinc-100 shadow-sm text-center">
+          <div className="bg-m3-surface p-4 rounded-3xl border border-zinc-100 shadow-sm text-center transition-colors duration-300">
             <p className="text-[10px] font-bold text-zinc-400 uppercase mb-1">Rank</p>
             <p className="text-lg font-bold text-orange-500">#4</p>
           </div>
@@ -384,7 +394,7 @@ const Approvals = ({ requests, onSelect }: any) => {
             <div 
               key={req.id} 
               onClick={() => onSelect(req)}
-              className="p-4 bg-white rounded-2xl border border-zinc-100 shadow-sm flex items-center justify-between cursor-pointer hover:bg-zinc-50 transition-colors"
+              className="p-4 bg-m3-surface rounded-2xl border border-zinc-100 shadow-sm flex items-center justify-between cursor-pointer hover:bg-zinc-50 transition-colors duration-300"
             >
               <div>
                 <h4 className="font-bold text-zinc-900">{req.employeeName}</h4>
@@ -547,6 +557,19 @@ export default function App() {
   const [snackbar, setSnackbar] = useState<string | null>(null);
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
+  React.useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
 
   // Test Connection
   React.useEffect(() => {
@@ -685,6 +708,8 @@ export default function App() {
             onReject={reject} 
             onShowSnackbar={showSnackbar}
             onLogout={logout}
+            theme={theme}
+            toggleTheme={toggleTheme}
           />
         )}
         {activeTab === 'employees' && <Employees employees={employees} onSelect={setSelectedEmployee} />}
@@ -748,17 +773,17 @@ export default function App() {
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-6 left-6 right-6 h-20 z-50">
-        <div className="absolute inset-0 bg-white rounded-[32px] shadow-2xl border border-zinc-100 flex items-center justify-around px-2">
+        <div className="absolute inset-0 bg-m3-surface rounded-[32px] shadow-2xl border border-zinc-100 flex items-center justify-around px-2 transition-colors duration-300">
           <button 
             onClick={() => setActiveTab('home')}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'home' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'home' ? 'text-m3-primary' : 'text-zinc-400'}`}
           >
             <Home className="w-6 h-6" />
             <span className="text-[10px] font-bold">Home</span>
           </button>
           <button 
             onClick={() => setActiveTab('employees')}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'employees' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'employees' ? 'text-m3-primary' : 'text-zinc-400'}`}
           >
             <Search className="w-6 h-6" />
             <span className="text-[10px] font-bold">Search</span>
@@ -769,14 +794,14 @@ export default function App() {
 
           <button 
             onClick={() => setActiveTab('approvals')}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'approvals' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'approvals' ? 'text-m3-primary' : 'text-zinc-400'}`}
           >
             <CheckCircle2 className="w-6 h-6" />
             <span className="text-[10px] font-bold">History</span>
           </button>
           <button 
             onClick={() => setActiveTab('profile')}
-            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'profile' ? 'text-[#6200EE]' : 'text-zinc-400'}`}
+            className={`flex flex-col items-center justify-center gap-1 flex-1 h-full transition-colors ${activeTab === 'profile' ? 'text-m3-primary' : 'text-zinc-400'}`}
           >
             <User className="w-6 h-6" />
             <span className="text-[10px] font-bold">Profile</span>
@@ -786,7 +811,7 @@ export default function App() {
         {/* Floating Scan Button */}
         <button 
           onClick={() => setActiveTab('scan')}
-          className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-[#6200EE] text-white rounded-full shadow-xl flex items-center justify-center active:scale-95 transition-transform z-[60]"
+          className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-m3-primary text-white rounded-full shadow-xl flex items-center justify-center active:scale-95 transition-transform z-[60]"
         >
           <Smartphone className="w-8 h-8" />
         </button>
