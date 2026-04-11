@@ -1,14 +1,14 @@
 package com.example.overtimeadmin.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.TrendingUp
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -17,10 +17,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.overtimeadmin.data.model.Employee
 import com.example.overtimeadmin.data.model.OvertimeRequest
 import com.example.overtimeadmin.ui.MainViewModel
@@ -114,9 +116,9 @@ fun EmployeeDetailScreen(
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         MetricItem(label = "Income", value = "$${(employee.weeklyOvertime * 45).toInt()}")
-                        Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
+                        VerticalDivider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
                         MetricItem(label = "Expenses", value = "$${(employee.weeklyOvertime * 12).toInt()}")
-                        Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
+                        VerticalDivider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
                         MetricItem(label = "Loan", value = "$890")
                     }
                 }

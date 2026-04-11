@@ -130,7 +130,7 @@ fun ApprovalDetailScreen(
             ) {
                 OutlinedButton(
                     onClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.REJECT)
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         viewModel.rejectRequest(requestId)
                         scope.launch {
                             snackbarHostState.showSnackbar("Request Rejected")
@@ -147,7 +147,7 @@ fun ApprovalDetailScreen(
                 }
                 Button(
                     onClick = {
-                        view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         viewModel.approveRequest(requestId)
                         scope.launch {
                             snackbarHostState.showSnackbar("Request Approved")
