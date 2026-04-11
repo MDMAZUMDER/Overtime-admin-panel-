@@ -9,9 +9,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.filled.QrCodeScanner
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.outlined.QrCodeScanner
+import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -30,7 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 sealed class Screen(val route: String, val label: String, val icon: ImageVector, val selectedIcon: ImageVector) {
     object Home : Screen("home", "Home", Icons.Outlined.Home, Icons.Filled.Home)
     object Search : Screen("employees", "Search", Icons.Outlined.Search, Icons.Filled.Search)
-    object Scan : Screen("scan", "Scan", Icons.Outlined.QrCodeScanner, Icons.Filled.QrCodeScanner)
+    object Scan : Screen("scan", "Scan", Icons.Outlined.QrCode, Icons.Filled.QrCode)
     object History : Screen("approvals", "History", Icons.Outlined.History, Icons.Filled.History)
     object Profile : Screen("profile", "Profile", Icons.Outlined.Person, Icons.Filled.Person)
 }
@@ -115,7 +115,7 @@ fun BottomNavBar(navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Default.QrCodeScanner,
+                imageVector = Icons.Default.QrCode,
                 contentDescription = "Scan",
                 tint = Color.White,
                 modifier = Modifier.size(28.dp)

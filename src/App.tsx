@@ -28,9 +28,19 @@ import {
   TrendingUp,
   LogIn,
   Moon,
-  Sun
+  Sun,
+  QrCode
 } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'motion/react';
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  Tooltip, 
+  CartesianGrid 
+} from 'recharts';
 import { mockEmployees, initialPendingRequests, weeklyTrendData } from './mockData';
 import { Employee, OvertimeRequest } from './types';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
@@ -53,47 +63,58 @@ import {
 
 // --- Components ---
 
-const SimpleLineChart = ({ data }: { data: number[] }) => {
-  const max = Math.max(...data);
-  const points = data.map((d, i) => ({
-    x: (i / (data.length - 1)) * 100,
-    y: 100 - (d / max) * 100
+const ModernTrendChart = ({ data }: { data: number[] }) => {
+  const chartData = data.map((val, i) => ({
+    name: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
+    hours: val
   }));
 
-  const pathData = `M ${points.map(p => `${p.x},${p.y}`).join(' L ')}`;
-
   return (
-    <div className="w-full h-40 relative px-4 py-8">
-      <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible">
-        <path
-          d={pathData}
-          fill="none"
-          stroke="var(--color-m3-primary)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r="2"
-            fill="white"
-            stroke="var(--color-m3-primary)"
-            strokeWidth="1"
+    <div className="w-full h-56 mt-4">
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <defs>
+            <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--m3-primary)" stopOpacity={0.3}/>
+              <stop offset="95%" stopColor="var(--m3-primary)" stopOpacity={0}/>
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--zinc-100)" />
+          <XAxis 
+            dataKey="name" 
+            axisLine={false} 
+            tickLine={false} 
+            tick={{ fontSize: 10, fill: 'var(--zinc-400)', fontWeight: 600 }}
+            dy={10}
           />
-        ))}
-      </svg>
-      <div className="flex justify-between mt-2 text-[10px] text-zinc-400 uppercase tracking-wider">
-        <span>Mon</span>
-        <span>Tue</span>
-        <span>Wed</span>
-        <span>Thu</span>
-        <span>Fri</span>
-        <span>Sat</span>
-        <span>Sun</span>
-      </div>
+          <YAxis 
+            axisLine={false} 
+            tickLine={false} 
+            tick={{ fontSize: 10, fill: 'var(--zinc-400)', fontWeight: 600 }}
+          />
+          <Tooltip 
+            contentStyle={{ 
+              backgroundColor: 'var(--m3-surface)', 
+              borderRadius: '16px', 
+              border: '1px solid var(--zinc-100)',
+              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              fontSize: '12px',
+              fontWeight: 'bold'
+            }}
+            itemStyle={{ color: 'var(--m3-primary)' }}
+            cursor={{ stroke: 'var(--m3-primary)', strokeWidth: 1, strokeDasharray: '4 4' }}
+          />
+          <Area 
+            type="monotone" 
+            dataKey="hours" 
+            stroke="var(--m3-primary)" 
+            strokeWidth={3}
+            fillOpacity={1} 
+            fill="url(#colorHours)" 
+            animationDuration={1500}
+          />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   );
 };
@@ -209,9 +230,14 @@ const Dashboard = ({
 
         {/* Chart */}
         <section>
-          <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-widest mb-4">Weekly Overtime Trend</h3>
-          <div className="bg-m3-surface rounded-m3-xl p-2 border border-zinc-100 shadow-sm transition-colors duration-300">
-            <SimpleLineChart data={weeklyTrendData} />
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-widest">Weekly Overtime Trend</h3>
+            <div className="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+              <TrendingUp className="w-3 h-3" /> +12%
+            </div>
+          </div>
+          <div className="bg-m3-surface rounded-m3-xl p-4 border border-zinc-100 shadow-sm transition-colors duration-300">
+            <ModernTrendChart data={weeklyTrendData} />
           </div>
         </section>
 
@@ -813,7 +839,7 @@ export default function App() {
           onClick={() => setActiveTab('scan')}
           className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 bg-m3-primary text-white rounded-full shadow-xl flex items-center justify-center active:scale-95 transition-transform z-[60]"
         >
-          <Smartphone className="w-8 h-8" />
+          <QrCode className="w-8 h-8" />
         </button>
       </div>
     </div>
