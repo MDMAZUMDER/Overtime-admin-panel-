@@ -30,7 +30,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 sealed class Screen(val route: String, val label: String, val icon: ImageVector, val selectedIcon: ImageVector) {
     object Home : Screen("home", "Home", Icons.Outlined.Home, Icons.Filled.Home)
     object Search : Screen("employees", "Search", Icons.Outlined.Search, Icons.Filled.Search)
-    object Scan : Screen("scan", "Scan", Icons.Outlined.QrCode, Icons.Filled.QrCode)
     object History : Screen("approvals", "History", Icons.Outlined.History, Icons.Filled.History)
     object Profile : Screen("profile", "Profile", Icons.Outlined.Person, Icons.Filled.Person)
 }
@@ -40,86 +39,48 @@ fun BottomNavBar(navController: NavController) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    Box(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 16.dp)
-            .height(80.dp)
+            .height(64.dp)
+            .shadow(12.dp, RoundedCornerShape(32.dp)),
+        shape = RoundedCornerShape(32.dp),
+        color = Color.White
     ) {
-        // Background Bar
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .height(64.dp)
-                .shadow(12.dp, RoundedCornerShape(32.dp)),
-            shape = RoundedCornerShape(32.dp),
-            color = Color.White
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Left Items
-                NavItem(Screen.Home, currentRoute == Screen.Home.route) {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-                NavItem(Screen.Search, currentRoute == Screen.Search.route) {
-                    navController.navigate(Screen.Search.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-
-                // Spacer for the floating button
-                Spacer(modifier = Modifier.width(64.dp))
-
-                // Right Items
-                NavItem(Screen.History, currentRoute == Screen.History.route) {
-                    navController.navigate(Screen.History.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }
-                NavItem(Screen.Profile, currentRoute == Screen.Profile.route) {
-                    navController.navigate(Screen.Profile.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
+            NavItem(Screen.Home, currentRoute == Screen.Home.route) {
+                navController.navigate(Screen.Home.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
                 }
             }
-        }
-
-        // Central Floating Action Button
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .size(64.dp)
-                .shadow(8.dp, CircleShape)
-                .background(Color(0xFF6200EE), CircleShape) // Purple color from image
-                .clickable { 
-                    navController.navigate(Screen.Scan.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.QrCode,
-                contentDescription = "Scan",
-                tint = Color.White,
-                modifier = Modifier.size(28.dp)
-            )
+            NavItem(Screen.Search, currentRoute == Screen.Search.route) {
+                navController.navigate(Screen.Search.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            NavItem(Screen.History, currentRoute == Screen.History.route) {
+                navController.navigate(Screen.History.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            NavItem(Screen.Profile, currentRoute == Screen.Profile.route) {
+                navController.navigate(Screen.Profile.route) {
+                    popUpTo(navController.graph.startDestinationId) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
         }
     }
 }
@@ -129,7 +90,7 @@ fun NavItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .clickable(onClick = onClick)
-            .padding(4.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -141,7 +102,7 @@ fun NavItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit) {
         )
         Text(
             text = screen.label,
-            fontSize = 12.sp,
+            fontSize = 10.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             color = if (isSelected) Color(0xFF6200EE) else Color.Gray
         )

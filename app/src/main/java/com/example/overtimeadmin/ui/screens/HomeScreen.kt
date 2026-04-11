@@ -317,10 +317,10 @@ fun SwipeableRequestItem(
                 detectHorizontalDragGestures(
                     onDragEnd = {
                         if (offsetX.value > 300f) {
-                            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
+                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                             onApprove()
                         } else if (offsetX.value < -300f) {
-                            view.performHapticFeedback(HapticFeedbackConstants.REJECT)
+                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                             onReject()
                         } else {
                             scope.launch { offsetX.animateTo(0f) }

@@ -135,23 +135,7 @@ fun ProfileScreen(snackbarHostState: SnackbarHostState) {
         ) {
             ProfileMenuGroup(
                 listOf(
-                    MenuItemData("My Address", Icons.Default.LocationOn),
-                    MenuItemData("Account", Icons.Default.Group)
-                ),
-                onItemClick = { scope.launch { snackbarHostState.showSnackbar("$it clicked") } }
-            )
-
-            ProfileMenuGroup(
-                listOf(
-                    MenuItemData("Notifications", Icons.Default.Notifications),
-                    MenuItemData("Devices", Icons.Default.Smartphone),
-                    MenuItemData("Passwords", Icons.Default.Key)
-                ),
-                onItemClick = { scope.launch { snackbarHostState.showSnackbar("$it clicked") } }
-            )
-
-            ProfileMenuGroup(
-                listOf(
+                    MenuItemData("Account", Icons.Default.Group),
                     MenuItemData("Theme", Icons.Default.Palette),
                     MenuItemData("Language", Icons.Default.Language)
                 ),
