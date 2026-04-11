@@ -10,6 +10,12 @@
   --color-m3-success: var(--m3-success);
   --color-m3-on-primary-container: var(--m3-on-primary-container);
   
+  --color-zinc-900: var(--zinc-900);
+  --color-zinc-500: var(--zinc-500);
+  --color-zinc-400: var(--zinc-400);
+  --color-zinc-100: var(--zinc-100);
+  --color-zinc-50: var(--zinc-50);
+  
   --radius-m3-xl: 28px;
   --radius-m3-l: 24px;
   --radius-m3-m: 16px;
