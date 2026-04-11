@@ -124,7 +124,7 @@ fun ScanScreen(onBack: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(2.dp)
-                        .offset(y = ((-120).dp + (240.dp * scanLineY)))
+                        .offset(y = ((-110).dp + (220.dp * scanLineY)))
                         .background(
                             Brush.horizontalGradient(
                                 listOf(Color.Transparent, Color(0xFF6200EE), Color.Transparent)
@@ -205,8 +205,6 @@ fun ScannerCorners() {
             .align(Alignment.TopStart)
             .size(cornerSize)
             .border(strokeWidth, color, RoundedCornerShape(topStart = 12.dp))
-            .clip(RoundedCornerShape(topStart = 12.dp))
-            .background(Color.Transparent)
         )
         // Top Right
         Box(modifier = Modifier

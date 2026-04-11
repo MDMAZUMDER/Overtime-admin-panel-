@@ -30,15 +30,21 @@ fun ApprovalsScreen(viewModel: MainViewModel, navController: NavController) {
 
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            CenterAlignedTopAppBar(
                 title = { 
                     Text(
                         "Approvals", 
-                        fontWeight = FontWeight.Bold 
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2D3142)
                     ) 
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
                 )
             )
         }
@@ -46,7 +52,7 @@ fun ApprovalsScreen(viewModel: MainViewModel, navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color(0xFFF8F9FE))
                 .padding(padding)
         ) {
             if (pendingRequests.isEmpty()) {
@@ -55,24 +61,38 @@ fun ApprovalsScreen(viewModel: MainViewModel, navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Default.CheckCircle, 
-                            contentDescription = null,
-                            modifier = Modifier.size(64.dp),
-                            tint = Color(0xFF2E7D32).copy(alpha = 0.3f)
-                        )
-                        Spacer(Modifier.height(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFE8F5E9)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.CheckCircle, 
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = Color(0xFF2E7D32)
+                            )
+                        }
+                        Spacer(Modifier.height(24.dp))
                         Text(
                             "All caught up!", 
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2D3142)
+                        )
+                        Text(
+                            "No pending requests to review",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color.Gray
                         )
                     }
                 }
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(pendingRequests) { request ->
@@ -92,13 +112,13 @@ fun ApprovalItem(request: OvertimeRequest, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(20.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -106,15 +126,15 @@ fun ApprovalItem(request: OvertimeRequest, onClick: () -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color(0xFFF0F2FF)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         request.employeeInitial, 
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer, 
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color(0xFF3F51B5), 
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -123,22 +143,23 @@ fun ApprovalItem(request: OvertimeRequest, onClick: () -> Unit) {
                     Text(
                         request.employeeName, 
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2D3142)
                     )
                     Text(
                         "${request.date} • ${request.hours} hrs", 
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = Color.Gray
                     )
                 }
             }
             Surface(
                 color = Color(0xFFFFF3E0),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
                     "Pending",
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFEF6C00)

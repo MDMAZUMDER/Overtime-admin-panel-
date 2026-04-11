@@ -36,164 +36,193 @@ fun EmployeeDetailScreen(
     val employee = employees.find { it.id == employeeId } ?: return
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Employee Profile") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.navigateUp() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
+        containerColor = Color(0xFFF8F9FE)
     ) { padding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(padding),
-            contentPadding = PaddingValues(20.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
         ) {
-            // Profile Header
-            item {
-                ProfileHeader(employee)
+            // Top Header Card
+            Surface(
+                color = Color.White,
+                shape = RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp),
+                shadowElevation = 2.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Custom Top Bar
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { navController.navigateUp() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color(0xFF2D3142))
+                        }
+                        IconButton(onClick = { /* More actions */ }) {
+                            Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color(0xFF2D3142))
+                        }
+                    }
+
+                    // Profile Info
+                    Box(
+                        modifier = Modifier
+                            .size(112.dp)
+                            .clip(CircleShape)
+                            .border(4.dp, Color.White, CircleShape)
+                            .background(Color(0xFFF0F2FF)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AsyncImage(
+                            model = "https://picsum.photos/seed/${employee.id}/200/200",
+                            contentDescription = employee.name,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Text(
+                        employee.name,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2D3142)
+                    )
+                    Text(
+                        employee.department,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Spacer(Modifier.height(32.dp))
+
+                    // Metrics Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        MetricItem(label = "Income", value = "$${(employee.weeklyOvertime * 45).toInt()}")
+                        Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
+                        MetricItem(label = "Expenses", value = "$${(employee.weeklyOvertime * 12).toInt()}")
+                        Divider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
+                        MetricItem(label = "Loan", value = "$890")
+                    }
+                }
             }
 
-            // Performance Metrics
-            item {
-                PerformanceMetrics(employee)
-            }
+            // Overview Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            "Overview",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF2D3142)
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.Notifications,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                            tint = Color(0xFFE0E0E0)
+                        )
+                    }
+                    Text(
+                        "Sept 13, 2020",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-            // Overtime History
-            item {
-                Text(
-                    "Recent Overtime History",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                Spacer(Modifier.height(24.dp))
+
+                // Overview Items
+                OverviewItem(
+                    icon = Icons.Default.ArrowUpward,
+                    label = "Sent",
+                    subLabel = "Sending Payment to Clients",
+                    amount = "$150"
+                )
+                Spacer(Modifier.height(16.dp))
+                OverviewItem(
+                    icon = Icons.Default.ArrowDownward,
+                    label = "Receive",
+                    subLabel = "Receiving Salary from company",
+                    amount = "$250"
+                )
+                Spacer(Modifier.height(16.dp))
+                OverviewItem(
+                    icon = Icons.Default.CreditCard,
+                    label = "Loan",
+                    subLabel = "Loan for the Car",
+                    amount = "$400"
                 )
             }
-
-            // Mock History Items
-            items(getMockHistory(employee.id)) { history ->
-                HistoryCard(history)
-            }
         }
     }
 }
 
 @Composable
-fun ProfileHeader(employee: Employee) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                employee.initial,
-                style = MaterialTheme.typography.displaySmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontWeight = FontWeight.Bold
-            )
-        }
-        Spacer(Modifier.height(16.dp))
-        Text(
-            employee.name,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            employee.department,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(12.dp))
-        StatusChip(employee.status)
+fun MetricItem(label: String, value: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Color(0xFF2D3142))
+        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
-fun PerformanceMetrics(employee: Employee) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        MetricCard(
-            modifier = Modifier.weight(1f),
-            label = "Weekly OT",
-            value = "${employee.weeklyOvertime}h",
-            color = MaterialTheme.colorScheme.primary
-        )
-        MetricCard(
-            modifier = Modifier.weight(1f),
-            label = "Efficiency",
-            value = "94%",
-            color = Color(0xFF2E7D32)
-        )
-        MetricCard(
-            modifier = Modifier.weight(1f),
-            label = "Rank",
-            value = "#4",
-            color = Color(0xFFEF6C00)
-        )
-    }
-}
-
-@Composable
-fun MetricCard(modifier: Modifier, label: String, value: String, color: Color) {
+fun OverviewItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, subLabel: String, amount: String) {
     Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
-            Spacer(Modifier.height(4.dp))
-            Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = color)
-        }
-    }
-}
-
-@Composable
-fun HistoryCard(request: OvertimeRequest) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        color = Color.White,
+        shape = RoundedCornerShape(32.dp),
+        shadowElevation = 0.dp
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            androidx.compose.material3.Icon(
-                Icons.Filled.TrendingUp,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(request.date, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
-                Text(request.reason, style = MaterialTheme.typography.bodyMedium, maxLines = 1)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(Color(0xFFF5F5F5)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(icon, contentDescription = null, tint = Color(0xFF2D3142), modifier = Modifier.size(20.dp))
+                }
+                Spacer(Modifier.width(16.dp))
+                Column {
+                    Text(label, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color(0xFF2D3142))
+                    Text(subLabel, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Medium)
+                }
             }
-            Text(
-                "${request.hours}h",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Text(amount, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color(0xFF2D3142))
         }
     }
 }

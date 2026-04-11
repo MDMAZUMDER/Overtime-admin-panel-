@@ -10,6 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Smartphone
@@ -142,11 +145,32 @@ fun ProfileScreen(snackbarHostState: SnackbarHostState) {
                 listOf(
                     MenuItemData("Notifications", Icons.Default.Notifications),
                     MenuItemData("Devices", Icons.Default.Smartphone),
-                    MenuItemData("Passwords", Icons.Default.Key),
-                    MenuItemData("Language", Icons.Default.Message)
+                    MenuItemData("Passwords", Icons.Default.Key)
                 ),
                 onItemClick = { scope.launch { snackbarHostState.showSnackbar("$it clicked") } }
             )
+
+            ProfileMenuGroup(
+                listOf(
+                    MenuItemData("Theme", Icons.Default.Palette),
+                    MenuItemData("Language", Icons.Default.Language)
+                ),
+                onItemClick = { scope.launch { snackbarHostState.showSnackbar("$it clicked") } }
+            )
+
+            // Logout Button
+            Button(
+                onClick = { scope.launch { snackbarHostState.showSnackbar("Logged out") } },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBA1A1A)),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Icon(Icons.Default.Logout, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Logout", fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

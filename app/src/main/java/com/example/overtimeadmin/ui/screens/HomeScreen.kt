@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.navigation.NavController
 import com.example.overtimeadmin.data.model.OvertimeRequest
 import com.example.overtimeadmin.data.repository.MockDataRepository
 import com.example.overtimeadmin.ui.MainViewModel
@@ -45,7 +46,7 @@ import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
+fun HomeScreen(viewModel: MainViewModel, navController: NavController, snackbarHostState: SnackbarHostState) {
     val pendingRequests by viewModel.pendingRequests.collectAsState()
     val totalHours = MockDataRepository.weeklyTrendData.sum()
     val scope = rememberCoroutineScope()
@@ -64,7 +65,7 @@ fun HomeScreen(viewModel: MainViewModel, snackbarHostState: SnackbarHostState) {
         ) {
             // Header Section
             item {
-                HomeHeader(onProfileClick = { /* Navigate to Profile */ })
+                HomeHeader(onProfileClick = { navController.navigate("profile") })
             }
 
             // Summary Grid
@@ -327,7 +328,8 @@ fun SwipeableRequestItem(
                     },
                     onHorizontalDrag = { change, dragAmount ->
                         change.consume()
-                        scope.launch { offsetX.snapTo(offsetX.value + dragAmount) }
+                        val newOffset = (offsetX.value + dragAmount).coerceIn(-400f, 400f)
+                        scope.launch { offsetX.snapTo(newOffset) }
                     }
                 )
             }
