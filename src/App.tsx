@@ -67,6 +67,16 @@ export default function App() {
 
   const handleLogin = async () => {
     if (isLoggingIn) return;
+    
+    // Check if storage is accessible
+    try {
+      localStorage.setItem('auth_test', '1');
+      localStorage.removeItem('auth_test');
+    } catch (e) {
+      alert("Your browser is blocking storage access. Please disable 'Block Third-party Cookies' or 'Prevent Cross-site Tracking' in your browser settings.");
+      return;
+    }
+
     setIsLoggingIn(true);
     try {
       const provider = new GoogleAuthProvider();
@@ -82,8 +92,8 @@ export default function App() {
         alert(`Domain Not Authorized. Please add this domain to Firebase: ${window.location.hostname}`);
       } else if (errorCode === 'auth/operation-not-allowed') {
         alert("Google Sign-in is not enabled in your Firebase Console. Please go to Authentication > Sign-in method and enable Google.");
-      } else if (errorCode === 'auth/invalid-api-key') {
-        alert("Invalid API Key: Please check if the API Key in your config is correct.");
+      } else if (errorMessage.includes('missing initial state')) {
+        alert("Login failed due to storage restrictions. Please try opening the app in a regular browser tab (not inside another app) or disable 'Prevent Cross-site Tracking' in settings.");
       } else {
         alert(`Login Error (${errorCode}): ${errorMessage}`);
       }
