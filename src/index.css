@@ -10,6 +10,38 @@
   }
 }
 
+@layer base {
+  :root {
+    --brand: #6750A4;
+    --on-brand: #FFFFFF;
+    --brand-container: #EADDFF;
+    --on-brand-container: #21005D;
+    --surface: #FFFBFE;
+    --on-surface: #1C1B1F;
+    --surface-variant: #E7E0EC;
+    --on-surface-variant: #49454F;
+    --outline: #79747E;
+    --outline-variant: #CAC4D0;
+  }
+
+  .dark {
+    --brand: #D0BCFF;
+    --on-brand: #381E72;
+    --brand-container: #4F378B;
+    --on-brand-container: #EADDFF;
+    --surface: #1C1B1F;
+    --on-surface: #E6E1E5;
+    --surface-variant: #49454F;
+    --on-surface-variant: #CAC4D0;
+    --outline: #938F99;
+    --outline-variant: #49454F;
+  }
+
+  body {
+    @apply bg-surface text-on-surface transition-colors duration-300;
+  }
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;

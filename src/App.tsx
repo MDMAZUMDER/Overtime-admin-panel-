@@ -25,8 +25,9 @@ import Dashboard from './components/Dashboard';
 import EmployeeList from './components/EmployeeList';
 import RequestList from './components/RequestList';
 import AdminSettings from './components/AdminSettings';
+import AdminProfile from './components/AdminProfile';
 
-type View = 'dashboard' | 'employees' | 'requests' | 'settings';
+type View = 'dashboard' | 'employees' | 'requests' | 'settings' | 'profile';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -109,12 +110,19 @@ export default function App() {
           <h2 className="text-xl font-bold tracking-tight capitalize">{currentView}</h2>
         </div>
         <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setCurrentView('profile')}
+            className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand/20 active:scale-90 transition-all"
+          >
+            <img 
+              src={user?.photoURL || `https://ui-avatars.com/api/?name=${user?.displayName || 'Admin'}&background=random`} 
+              alt="Profile" 
+              className="w-full h-full object-cover"
+            />
+          </button>
           <button className="p-2 hover:bg-surface-variant rounded-full relative">
             <Bell className="w-5 h-5" />
             <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-surface"></span>
-          </button>
-          <button onClick={handleLogout} className="p-2 hover:bg-red-50 text-red-500 rounded-full">
-            <LogOut className="w-5 h-5" />
           </button>
         </div>
       </header>
@@ -133,6 +141,7 @@ export default function App() {
             {currentView === 'employees' && <EmployeeList />}
             {currentView === 'requests' && <RequestList />}
             {currentView === 'settings' && <AdminSettings />}
+            {currentView === 'profile' && <AdminProfile />}
           </motion.div>
         </AnimatePresence>
       </div>
