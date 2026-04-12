@@ -22,6 +22,7 @@ import {
   Bar
 } from 'recharts';
 import { motion } from 'motion/react';
+import { useTranslation } from '../lib/useTranslation';
 
 const data = [
   { name: 'Mon', hours: 45 },
@@ -34,6 +35,7 @@ const data = [
 ];
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalEmployees: 0,
     pendingRequests: 0,
@@ -70,13 +72,13 @@ export default function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-4">
         <StatCard 
-          title="Employees" 
+          title={t.staff} 
           value={stats.totalEmployees.toString()} 
           icon={<Users className="w-5 h-5" />} 
           color="bg-blue-100 text-blue-700"
         />
         <StatCard 
-          title="Pending" 
+          title={t.pending} 
           value={stats.pendingRequests.toString()} 
           icon={<AlertCircle className="w-5 h-5" />} 
           color="bg-amber-100 text-amber-700"
@@ -88,7 +90,7 @@ export default function Dashboard() {
           color="bg-green-100 text-green-700"
         />
         <StatCard 
-          title="Active" 
+          title={t.active} 
           value={stats.activeEmployees.toString()} 
           icon={<CheckCircle2 className="w-5 h-5" />} 
           color="bg-purple-100 text-purple-700"
@@ -106,29 +108,31 @@ export default function Dashboard() {
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6750A4" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#6750A4" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="var(--brand)" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="var(--brand)" stopOpacity={0}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E7E0EC" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--outline-variant)" />
               <XAxis 
                 dataKey="name" 
                 axisLine={false} 
                 tickLine={false} 
-                tick={{ fontSize: 10, fill: '#49454F' }} 
+                tick={{ fontSize: 10, fill: 'var(--on-surface-variant)' }} 
               />
               <Tooltip 
                 contentStyle={{ 
+                  backgroundColor: 'var(--surface)',
                   borderRadius: '16px', 
                   border: 'none', 
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  color: 'var(--on-surface)'
                 }} 
               />
               <Area 
                 type="monotone" 
                 dataKey="hours" 
-                stroke="#6750A4" 
+                stroke="var(--brand)" 
                 strokeWidth={3}
                 fillOpacity={1} 
                 fill="url(#colorHours)" 
@@ -140,7 +144,7 @@ export default function Dashboard() {
 
       {/* Recent Activity */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant px-2">System Insights</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-on-surface-variant px-2">{t.systemOverview}</h3>
         <div className="space-y-2">
           <ActivityRow 
             icon={<TrendingUp className="w-4 h-4 text-green-600" />}
