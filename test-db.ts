@@ -1,0 +1,19 @@
+
+import { initializeApp } from 'firebase/app';
+import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import firebaseConfig from './firebase-applet-config.json';
+
+async function test() {
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+    console.log('Testing connection to:', firebaseConfig.projectId, 'Database:', firebaseConfig.firestoreDatabaseId);
+    const testDoc = doc(db, 'test', 'connection');
+    await getDocFromServer(testDoc);
+    console.log('SUCCESS: Database is accessible!');
+  } catch (error) {
+    console.error('FAILURE:', error.message);
+  }
+}
+
+test();

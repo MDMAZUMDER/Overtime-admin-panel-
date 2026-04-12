@@ -97,5 +97,10 @@ service cloud.firestore {
       allow update: if isAdmin() && isValidRequest(request.resource.data);
       allow delete: if isAdmin();
     }
+
+    // Connection test document
+    match /test/connection {
+      allow read: if true;
+    }
   }
 }

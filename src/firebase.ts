@@ -4,17 +4,20 @@ import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, dele
 import firebaseConfig from '../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
 // Connection test
 async function testConnection() {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    const testDoc = doc(db, 'test', 'connection');
+    await getDocFromServer(testDoc);
+    console.log("Firebase connection successful.");
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration.");
+    console.error("Firebase Connection Error:", error);
+    if (error instanceof Error && (error.message.includes('the client is offline') || error.message.includes('permission-denied'))) {
+      console.error("Please check your Firebase configuration and Firestore rules.");
     }
   }
 }
