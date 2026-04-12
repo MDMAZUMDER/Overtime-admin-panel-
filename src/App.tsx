@@ -92,8 +92,11 @@ export default function App() {
         alert(`Domain Not Authorized. Please add this domain to Firebase: ${window.location.hostname}`);
       } else if (errorCode === 'auth/operation-not-allowed') {
         alert("Google Sign-in is not enabled in your Firebase Console. Please go to Authentication > Sign-in method and enable Google.");
-      } else if (errorMessage.includes('missing initial state')) {
-        alert("Login failed due to storage restrictions. Please try opening the app in a regular browser tab (not inside another app) or disable 'Prevent Cross-site Tracking' in settings.");
+      } else if (errorMessage.includes('missing initial state') || errorCode === 'auth/internal-error') {
+        const confirmNewTab = window.confirm("Login failed due to browser restrictions. Would you like to open the app in a new tab to fix this?");
+        if (confirmNewTab) {
+          window.open(window.location.href, '_blank');
+        }
       } else {
         alert(`Login Error (${errorCode}): ${errorMessage}`);
       }

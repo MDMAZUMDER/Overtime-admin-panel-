@@ -7,12 +7,11 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId || '(default)');
 export const auth = getAuth(app);
 
-// Set persistence to local storage to help with iframe/mobile issues
-setPersistence(auth, browserLocalPersistence).catch(err => {
-  console.error("Persistence error:", err);
-});
+// Use local persistence for better reliability on mobile
+setPersistence(auth, browserLocalPersistence).catch(console.error);
 
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // Connection test
 async function testConnection() {
