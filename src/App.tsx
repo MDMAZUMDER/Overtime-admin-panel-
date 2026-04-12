@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { auth, googleProvider, db } from './firebase';
-import { onAuthStateChanged, signInWithPopup, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, signInWithPopup, signOut, User, GoogleAuthProvider } from 'firebase/auth';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { 
   LayoutDashboard, 
@@ -66,9 +66,16 @@ export default function App() {
 
   const handleLogin = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      await signInWithPopup(auth, provider);
+    } catch (error: any) {
       console.error("Login failed", error);
+      if (error.code === 'auth/unauthorized-domain') {
+        alert("This domain is not authorized in Firebase. Please add this URL to your Firebase Console > Authentication > Settings > Authorized Domains.");
+      } else {
+        alert("Login failed: " + error.message);
+      }
     }
   };
 
