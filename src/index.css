@@ -1,85 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Outfit", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  
-  --color-m3-primary: #4F46E5;
-  --color-m3-on-primary: #FFFFFF;
-  --color-m3-primary-container: #EEF2FF;
-  --color-m3-on-primary-container: #312E81;
-  
-  --color-m3-secondary: #64748B;
-  --color-m3-on-secondary: #FFFFFF;
-  --color-m3-secondary-container: #F1F5F9;
-  --color-m3-on-secondary-container: #1E293B;
-  
-  --color-m3-background: #F8FAFC;
-  --color-m3-on-background: #0F172A;
-  
-  --color-m3-surface: #FFFFFF;
-  --color-m3-on-surface: #0F172A;
-  --color-m3-surface-variant: #F1F5F9;
-  --color-m3-on-surface-variant: #475569;
-  --color-m3-outline: #E2E8F0;
-
-  --radius-m3-xs: 8px;
-  --radius-m3-sm: 12px;
-  --radius-m3-md: 16px;
-  --radius-m3-lg: 24px;
-  --radius-m3-xl: 32px;
-}
-
-@layer base {
-  body {
-    @apply bg-m3-background text-m3-on-background font-sans antialiased selection:bg-m3-primary/20;
-    overflow-x: hidden;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight;
-  }
-}
-
-@layer components {
-  .m3-card {
-    @apply bg-m3-surface rounded-m3-lg p-6 border border-m3-outline/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:border-m3-outline;
-  }
-
-  .m3-fab {
-    @apply fixed bottom-28 right-6 w-16 h-16 bg-m3-primary text-m3-on-primary rounded-2xl flex items-center justify-center shadow-2xl shadow-m3-primary/40 hover:scale-110 active:scale-95 transition-all duration-300 z-40;
-  }
-
-  .glass-panel {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
-  }
-
-  .m3-bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 h-24 bg-white/80 backdrop-blur-xl border-t border-m3-outline/30 flex items-center justify-around px-4 z-50 transition-all duration-300;
-  }
-
-  .m3-nav-item {
-    @apply flex flex-col items-center justify-center gap-1.5 flex-1 h-full transition-all duration-300 relative;
-  }
-
-  .m3-nav-icon-container {
-    @apply w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300;
-  }
-
-  .m3-nav-item-active .m3-nav-icon-container {
-    @apply bg-m3-primary text-white shadow-lg shadow-m3-primary/30 scale-110;
-  }
-
-  .m3-nav-item:not(.m3-nav-item-active) {
-    @apply text-slate-400 hover:text-slate-600;
-  }
-
-  .m3-nav-item-active {
-    @apply text-m3-primary font-semibold;
-  }
-
+@layer utilities {
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -89,10 +10,53 @@
   }
 }
 
-.dark {
-  --color-m3-background: #0F172A;
-  --color-m3-on-background: #F8FAFC;
-  --color-m3-surface: #1E293B;
-  --color-m3-on-surface: #F8FAFC;
-  --color-m3-outline: #334155;
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Material 3 Colors */
+  --color-brand: #6750A4;
+  --color-brand-container: #EADDFF;
+  --color-on-brand-container: #21005D;
+  --color-surface: #FEF7FF;
+  --color-surface-variant: #E7E0EC;
+  --color-on-surface: #1D1B20;
+  --color-on-surface-variant: #49454F;
+  --color-outline: #79747E;
+  --color-outline-variant: #CAC4D0;
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-on-surface font-sans antialiased;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white rounded-[28px] border border-outline-variant/30 shadow-sm;
+  }
+  
+  .data-row {
+    @apply flex items-center justify-between p-4 border-b border-outline-variant/20 hover:bg-surface-variant/30 transition-colors cursor-pointer;
+  }
+  
+  .col-header {
+    @apply text-[11px] font-bold uppercase tracking-wider text-on-surface-variant;
+  }
+  
+  .data-value {
+    @apply font-mono tracking-tighter;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-outline-variant rounded-full;
 }

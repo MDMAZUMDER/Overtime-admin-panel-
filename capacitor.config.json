@@ -1,0 +1,6 @@
+{
+  "appId": "com.otmanager.app",
+  "appName": "OT Manager",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

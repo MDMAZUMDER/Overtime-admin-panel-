@@ -1,22 +1,22 @@
+// File: app/src/main/java/com/example/overtimeadmin/ui/screens/EmployeeDetailScreen.kt
 package com.example.overtimeadmin.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,216 +24,310 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.overtimeadmin.data.model.Employee
-import com.example.overtimeadmin.data.model.OvertimeRequest
+import com.example.overtimeadmin.data.model.EmployeeStatus
 import com.example.overtimeadmin.ui.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmployeeDetailScreen(
-    employeeId: Int,
-    viewModel: MainViewModel,
-    navController: NavController
-) {
+fun EmployeeDetailScreen(employeeId: Int, viewModel: MainViewModel, navController: NavController) {
     val employees by viewModel.employees.collectAsState()
     val employee = employees.find { it.id == employeeId } ?: return
 
     Scaffold(
-        containerColor = Color(0xFFF8F9FE)
+        topBar = {
+            TopAppBar(
+                title = { Text("Employee Profile", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { /* Edit */ }) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    }
+                    IconButton(onClick = { /* More */ }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                    }
+                }
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
+                .padding(padding),
+            contentPadding = PaddingValues(bottom = 32.dp)
         ) {
-            // Top Header Card
-            Surface(
-                color = Color.White,
-                shape = RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp),
-                shadowElevation = 2.dp
-            ) {
-                Column(
+            // Profile Header
+            item {
+                ProfileHeader(employee)
+            }
+
+            // Stats Section
+            item {
+                EmployeeStatsSection(employee)
+            }
+
+            // Contact Info
+            item {
+                InfoSection(
+                    title = "Contact Information",
+                    items = listOf(
+                        InfoItemData("Email", employee.email, Icons.Default.Email),
+                        InfoItemData("Phone", employee.phone, Icons.Default.Phone),
+                        InfoItemData("Department", employee.department, Icons.Default.Business),
+                        InfoItemData("Position", employee.position, Icons.Default.Badge)
+                    )
+                )
+            }
+
+            // Employment Details
+            item {
+                InfoSection(
+                    title = "Employment Details",
+                    items = listOf(
+                        InfoItemData("Join Date", employee.joinDate, Icons.Default.CalendarToday),
+                        InfoItemData("Hourly Rate", "$${employee.hourlyRate}/hr", Icons.Default.AttachMoney),
+                        InfoItemData("Status", if (employee.status == EmployeeStatus.ACTIVE) "Active" else "On Break", Icons.Default.Info)
+                    )
+                )
+            }
+
+            // Recent OT History Header
+            item {
+                Text(
+                    "Recent Overtime History",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)
+                )
+            }
+
+            // Mock History
+            items(listOf(1, 2, 3)) { i ->
+                HistoryItem(
+                    date = "Oct ${10 - i}, 2023",
+                    hours = "${4 + i}.0h",
+                    status = if (i == 1) "Approved" else "Completed",
+                    reason = "Project Alpha Deadline"
+                )
+            }
+            
+            // Admin Actions
+            item {
+                Spacer(Modifier.height(24.dp))
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .padding(horizontal = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    // Custom Top Bar
+                    OutlinedButton(
+                        onClick = { /* Deactivate */ },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+                    ) {
+                        Text("Deactivate")
+                    }
+                    Button(
+                        onClick = { /* Generate Report */ },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("Generate Report")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileHeader(employee: Employee) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Surface(
+            modifier = Modifier.size(120.dp),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primaryContainer,
+            border = androidx.compose.foundation.BorderStroke(4.dp, MaterialTheme.colorScheme.surface)
+        ) {
+            AsyncImage(
+                model = "https://picsum.photos/seed/${employee.id}/200/200",
+                contentDescription = employee.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(
+            employee.name,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            employee.position,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(8.dp))
+        Surface(
+            color = if (employee.status == EmployeeStatus.ACTIVE) Color(0xFFE8F5E9) else Color(0xFFFFF3E0),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(
+                if (employee.status == EmployeeStatus.ACTIVE) "ACTIVE" else "ON BREAK",
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Bold,
+                color = if (employee.status == EmployeeStatus.ACTIVE) Color(0xFF2E7D32) else Color(0xFFE65100)
+            )
+        }
+    }
+}
+
+@Composable
+fun EmployeeStatsSection(employee: Employee) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        StatBox(
+            label = "Weekly",
+            value = "${employee.weeklyOvertime}h",
+            modifier = Modifier.weight(1f)
+        )
+        StatBox(
+            label = "Monthly",
+            value = "${employee.monthlyOvertime}h",
+            modifier = Modifier.weight(1f)
+        )
+        StatBox(
+            label = "Total",
+            value = "${employee.totalOvertime}h",
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+fun StatBox(label: String, value: String, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                value,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline
+            )
+        }
+    }
+}
+
+data class InfoItemData(val label: String, val value: String, val icon: ImageVector)
+
+@Composable
+fun InfoSection(title: String, items: List<InfoItemData>) {
+    Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
+        Text(
+            title,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        ) {
+            Column {
+                items.forEachIndexed { index, item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                            .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.navigateUp() }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color(0xFF2D3142))
-                        }
-                        IconButton(onClick = { /* More actions */ }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color(0xFF2D3142))
-                        }
-                    }
-
-                    // Profile Info
-                    Box(
-                        modifier = Modifier
-                            .size(112.dp)
-                            .clip(CircleShape)
-                            .border(4.dp, Color.White, CircleShape)
-                            .background(Color(0xFFF0F2FF)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AsyncImage(
-                            model = "https://picsum.photos/seed/${employee.id}/200/200",
-                            contentDescription = employee.name,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    Text(
-                        employee.name,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2D3142)
-                    )
-                    Text(
-                        employee.department,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        fontWeight = FontWeight.Medium
-                    )
-
-                    Spacer(Modifier.height(32.dp))
-
-                    // Metrics Row
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        MetricItem(label = "Income", value = "$${(employee.weeklyOvertime * 45).toInt()}")
-                        VerticalDivider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
-                        MetricItem(label = "Expenses", value = "$${(employee.weeklyOvertime * 12).toInt()}")
-                        VerticalDivider(modifier = Modifier.height(40.dp).width(1.dp), color = Color(0xFFF0F2FF))
-                        MetricItem(label = "Loan", value = "$890")
-                    }
-                }
-            }
-
-            // Overview Section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(24.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            "Overview",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF2D3142)
-                        )
-                        Spacer(Modifier.width(8.dp))
                         Icon(
-                            Icons.Default.Notifications,
+                            item.icon,
                             contentDescription = null,
-                            modifier = Modifier.size(20.dp),
-                            tint = Color(0xFFE0E0E0)
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                item.label,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.outline
+                            )
+                            Text(
+                                item.value,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                    if (index < items.size - 1) {
+                        Divider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
                         )
                     }
-                    Text(
-                        "Sept 13, 2020",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = Color.Gray,
-                        fontWeight = FontWeight.Bold
-                    )
                 }
-
-                Spacer(Modifier.height(24.dp))
-
-                // Overview Items
-                OverviewItem(
-                    icon = Icons.Default.ArrowForward,
-                    label = "Sent",
-                    subLabel = "Sending Payment to Clients",
-                    amount = "$150"
-                )
-                Spacer(Modifier.height(16.dp))
-                OverviewItem(
-                    icon = Icons.Default.ArrowBack,
-                    label = "Receive",
-                    subLabel = "Receiving Salary from company",
-                    amount = "$250"
-                )
-                Spacer(Modifier.height(16.dp))
-                OverviewItem(
-                    icon = Icons.Default.AccountBalance,
-                    label = "Loan",
-                    subLabel = "Loan for the Car",
-                    amount = "$400"
-                )
             }
         }
     }
 }
 
 @Composable
-fun MetricItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Color(0xFF2D3142))
-        Text(label, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Bold)
-    }
-}
-
-@Composable
-fun OverviewItem(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, subLabel: String, amount: String) {
-    Surface(
-        color = Color.White,
-        shape = RoundedCornerShape(32.dp),
-        shadowElevation = 0.dp
+fun HistoryItem(date: String, hours: String, status: String, reason: String) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 6.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(Color(0xFFF5F5F5)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(icon, contentDescription = null, tint = Color(0xFF2D3142), modifier = Modifier.size(20.dp))
-                }
-                Spacer(Modifier.width(16.dp))
-                Column {
-                    Text(label, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color(0xFF2D3142))
-                    Text(subLabel, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontWeight = FontWeight.Medium)
-                }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(date, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                Text(reason, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
             }
-            Text(amount, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color(0xFF2D3142))
+            Column(horizontalAlignment = Alignment.End) {
+                Text(hours, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = MaterialTheme.colorScheme.primary)
+                Text(status, style = MaterialTheme.typography.labelSmall, color = if (status == "Approved") Color(0xFF2E7D32) else Color.Gray)
+            }
         }
     }
-}
-
-// Mock data for history
-fun getMockHistory(employeeId: Int): List<OvertimeRequest> {
-    return listOf(
-        OvertimeRequest(101, employeeId, "", "", 2.0, "Oct 10, 2023", "Project deadline support"),
-        OvertimeRequest(102, employeeId, "", "", 1.5, "Oct 08, 2023", "System maintenance"),
-        OvertimeRequest(103, employeeId, "", "", 3.0, "Oct 05, 2023", "Client meeting preparation")
-    )
 }

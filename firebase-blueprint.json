@@ -2,43 +2,45 @@
   "entities": {
     "Employee": {
       "title": "Employee",
-      "description": "Employee profile information",
+      "description": "A staff member in the organization",
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "department": { "type": "string" },
-        "status": { "type": "string", "enum": ["ACTIVE", "ON_BREAK"] },
-        "weeklyOvertime": { "type": "number" },
-        "initial": { "type": "string" },
-        "email": { "type": "string", "format": "email" },
-        "role": { "type": "string", "enum": ["admin", "employee"] }
+        "id": { "type": "string", "description": "Unique identifier" },
+        "name": { "type": "string", "description": "Full name" },
+        "email": { "type": "string", "format": "email", "description": "Work email" },
+        "phone": { "type": "string", "description": "Contact number" },
+        "department": { "type": "string", "description": "Department name" },
+        "position": { "type": "string", "description": "Job title" },
+        "status": { "type": "string", "enum": ["ACTIVE", "ON_BREAK", "INACTIVE"], "description": "Current status" },
+        "hourlyRate": { "type": "number", "description": "Hourly pay rate" },
+        "joinDate": { "type": "string", "format": "date", "description": "Date of joining" },
+        "photoUrl": { "type": "string", "format": "uri", "description": "Profile picture URL" }
       },
-      "required": ["id", "name", "department", "status"]
+      "required": ["name", "email", "department", "position", "status"]
     },
     "OvertimeRequest": {
-      "title": "OvertimeRequest",
-      "description": "Overtime request submitted by an employee",
+      "title": "Overtime Request",
+      "description": "A request for overtime hours by an employee",
       "type": "object",
       "properties": {
-        "id": { "type": "string" },
-        "employeeId": { "type": "string" },
-        "employeeName": { "type": "string" },
-        "employeeInitial": { "type": "string" },
-        "hours": { "type": "number" },
-        "date": { "type": "string", "format": "date-time" },
-        "reason": { "type": "string" },
-        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"] }
+        "id": { "type": "string", "description": "Unique identifier" },
+        "employeeId": { "type": "string", "description": "Reference to Employee" },
+        "employeeName": { "type": "string", "description": "Denormalized employee name" },
+        "date": { "type": "string", "format": "date", "description": "Date of overtime" },
+        "hours": { "type": "number", "description": "Number of hours requested" },
+        "reason": { "type": "string", "description": "Reason for overtime" },
+        "status": { "type": "string", "enum": ["PENDING", "APPROVED", "REJECTED"], "description": "Approval status" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp of request" }
       },
-      "required": ["id", "employeeId", "employeeName", "hours", "date", "reason", "status"]
+      "required": ["employeeId", "date", "hours", "reason", "status"]
     }
   },
   "firestore": {
     "/employees/{employeeId}": {
       "schema": "Employee",
-      "description": "Collection of employee profiles"
+      "description": "Collection of employees"
     },
-    "/overtime_requests/{requestId}": {
+    "/requests/{requestId}": {
       "schema": "OvertimeRequest",
       "description": "Collection of overtime requests"
     }

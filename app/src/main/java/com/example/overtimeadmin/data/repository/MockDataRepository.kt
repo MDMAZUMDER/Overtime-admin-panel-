@@ -4,10 +4,66 @@ import com.example.overtimeadmin.data.model.*
 
 object MockDataRepository {
     val employees = listOf(
-        Employee(1, "Alex Chen", "Engineering", EmployeeStatus.ACTIVE, 6.5, "AC"),
-        Employee(2, "Jamie Rivera", "Product", EmployeeStatus.ACTIVE, 3.2, "JR"),
-        Employee(3, "Taylor Smith", "Sales", EmployeeStatus.ON_BREAK, 0.0, "TS"),
-        Employee(4, "Morgan Lee", "Engineering", EmployeeStatus.ACTIVE, 8.0, "ML")
+        Employee(
+            id = 1, 
+            name = "Alex Chen", 
+            email = "alex.chen@company.com",
+            phone = "+1 (555) 123-4567",
+            department = "Engineering", 
+            position = "Senior Developer",
+            status = EmployeeStatus.ACTIVE, 
+            hourlyRate = 45.0,
+            weeklyOvertime = 6.5, 
+            monthlyOvertime = 24.0,
+            totalOvertime = 156.0,
+            initial = "AC",
+            joinDate = "Jan 15, 2022"
+        ),
+        Employee(
+            id = 2, 
+            name = "Jamie Rivera", 
+            email = "jamie.r@company.com",
+            phone = "+1 (555) 234-5678",
+            department = "Product", 
+            position = "Product Manager",
+            status = EmployeeStatus.ACTIVE, 
+            hourlyRate = 50.0,
+            weeklyOvertime = 3.2, 
+            monthlyOvertime = 12.5,
+            totalOvertime = 88.0,
+            initial = "JR",
+            joinDate = "Mar 10, 2021"
+        ),
+        Employee(
+            id = 3, 
+            name = "Taylor Smith", 
+            email = "t.smith@company.com",
+            phone = "+1 (555) 345-6789",
+            department = "Sales", 
+            position = "Account Executive",
+            status = EmployeeStatus.ON_BREAK, 
+            hourlyRate = 35.0,
+            weeklyOvertime = 0.0, 
+            monthlyOvertime = 8.0,
+            totalOvertime = 45.0,
+            initial = "TS",
+            joinDate = "Jun 05, 2023"
+        ),
+        Employee(
+            id = 4, 
+            name = "Morgan Lee", 
+            email = "m.lee@company.com",
+            phone = "+1 (555) 456-7890",
+            department = "Engineering", 
+            position = "QA Engineer",
+            status = EmployeeStatus.ACTIVE, 
+            hourlyRate = 40.0,
+            weeklyOvertime = 8.0, 
+            monthlyOvertime = 30.0,
+            totalOvertime = 210.0,
+            initial = "ML",
+            joinDate = "Nov 20, 2022"
+        )
     )
 
     val initialPendingRequests = listOf(

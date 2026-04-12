@@ -11,10 +11,17 @@ enum class RequestStatus {
 data class Employee(
     val id: Int,
     val name: String,
+    val email: String,
+    val phone: String,
     val department: String,
+    val position: String,
     val status: EmployeeStatus,
+    val hourlyRate: Double,
     val weeklyOvertime: Double,
-    val initial: String
+    val monthlyOvertime: Double,
+    val totalOvertime: Double,
+    val initial: String,
+    val joinDate: String
 )
 
 data class OvertimeRequest(

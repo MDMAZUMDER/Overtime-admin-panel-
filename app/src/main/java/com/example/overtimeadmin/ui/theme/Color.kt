@@ -3,35 +3,35 @@ package com.example.overtimeadmin.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Light Theme - Professional Indigo/Blue
-val LightPrimary = Color(0xFF3F51B5)
+// Light Theme - Professional Indigo/Navy
+val LightPrimary = Color(0xFF1A237E)
 val LightOnPrimary = Color(0xFFFFFFFF)
 val LightPrimaryContainer = Color(0xFFE8EAF6)
-val LightOnPrimaryContainer = Color(0xFF1A237E)
+val LightOnPrimaryContainer = Color(0xFF0D47A1)
 
-val LightSecondary = Color(0xFF5C6BC0)
+val LightSecondary = Color(0xFF3949AB)
 val LightOnSecondary = Color(0xFFFFFFFF)
-val LightSecondaryContainer = Color(0xFFE8EAF6)
-val LightOnSecondaryContainer = Color(0xFF283593)
+val LightSecondaryContainer = Color(0xFFC5CAE9)
+val LightOnSecondaryContainer = Color(0xFF1A237E)
 
-val LightTertiary = Color(0xFF009688)
+val LightTertiary = Color(0xFF00695C)
 val LightOnTertiary = Color(0xFFFFFFFF)
-val LightTertiaryContainer = Color(0xFFE0F2F1)
+val LightTertiaryContainer = Color(0xFFB2DFDB)
 val LightOnTertiaryContainer = Color(0xFF004D40)
 
-val LightError = Color(0xFFD32F2F)
+val LightError = Color(0xFFB71C1C)
 val LightOnError = Color(0xFFFFFFFF)
 val LightErrorContainer = Color(0xFFFFEBEE)
-val LightOnErrorContainer = Color(0xFFB71C1C)
+val LightOnErrorContainer = Color(0xFF7F0000)
 
-val LightBackground = Color(0xFFF8F9FA)
-val LightOnBackground = Color(0xFF1C1B1F)
+val LightBackground = Color(0xFFF4F5F7)
+val LightOnBackground = Color(0xFF172B4D)
 val LightSurface = Color(0xFFFFFFFF)
-val LightOnSurface = Color(0xFF1C1B1F)
-val LightSurfaceVariant = Color(0xFFE7E0EC)
-val LightOnSurfaceVariant = Color(0xFF49454F)
+val LightOnSurface = Color(0xFF172B4D)
+val LightSurfaceVariant = Color(0xFFEBECF0)
+val LightOnSurfaceVariant = Color(0xFF42526E)
 
-val LightOutline = Color(0xFF79747E)
+val LightOutline = Color(0xFF7A869A)
 
 // Dark Theme - Deep Navy/Charcoal (AMOLED Friendly)
 val DarkPrimary = Color(0xFFC5CAE9)

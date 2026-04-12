@@ -1,5 +1,5 @@
 {
-  "name": "OT Manager",
-  "description": "A focused application for managing employee overtime, featuring a modern dashboard, directory, and approvals.",
+  "name": "OT Manager Android",
+  "description": "A native Android application for managing employee overtime, featuring a modern Jetpack Compose UI, real-time analytics, and automated approval workflows.",
   "requestFramePermissions": []
 }
