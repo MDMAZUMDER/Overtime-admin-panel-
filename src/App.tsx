@@ -71,15 +71,21 @@ export default function App() {
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      console.log("Login Success:", result.user.email);
     } catch (error: any) {
-      console.error("Login failed", error);
-      if (error.code === 'auth/popup-closed-by-user') {
-        alert("Login window was closed. Please try again and keep the window open until login is complete.");
-      } else if (error.code === 'auth/unauthorized-domain') {
-        alert("This domain is not authorized. Please ensure both dev and pre URLs are added to Firebase Authorized Domains.");
+      console.error("Full Login Error Object:", error);
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      
+      if (errorCode === 'auth/unauthorized-domain') {
+        alert(`Domain Not Authorized. Please add this domain to Firebase: ${window.location.hostname}`);
+      } else if (errorCode === 'auth/operation-not-allowed') {
+        alert("Google Sign-in is not enabled in your Firebase Console. Please go to Authentication > Sign-in method and enable Google.");
+      } else if (errorCode === 'auth/invalid-api-key') {
+        alert("Invalid API Key: Please check if the API Key in your config is correct.");
       } else {
-        alert("Login failed: " + error.message);
+        alert(`Login Error (${errorCode}): ${errorMessage}`);
       }
     } finally {
       setIsLoggingIn(false);
