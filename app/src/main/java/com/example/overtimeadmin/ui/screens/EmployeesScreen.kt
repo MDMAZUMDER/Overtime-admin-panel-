@@ -1,6 +1,7 @@
 // File: app/src/main/java/com/example/overtimeadmin/ui/screens/EmployeesScreen.kt
 package com.example.overtimeadmin.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -91,7 +92,7 @@ fun EmployeesScreen(viewModel: MainViewModel, navController: NavController) {
                     )
                 }
                 items(filteredEmployees) { employee ->
-                    EmployeeCard(employee, onClick = {
+                    EmployeeListItemCard(employee, onClick = {
                         navController.navigate("employeeDetail/${employee.id}")
                     })
                 }
@@ -135,7 +136,7 @@ fun EmployeesScreen(viewModel: MainViewModel, navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 listOf("All", "Active", "On Break").forEach { filter ->
-                    FilterChip(
+                    EmployeeFilterChip(
                         label = filter,
                         isSelected = selectedFilter == filter,
                         onClick = { selectedFilter = filter }
@@ -202,12 +203,12 @@ fun EmployeesScreen(viewModel: MainViewModel, navController: NavController) {
 
             // Demo Employees for Circular Selector
             val demoEmployees = listOf(
-                Employee(101, "Andrea", "A", "Sales", EmployeeStatus.ACTIVE, 2.5),
-                Employee(102, "John", "J", "HR", EmployeeStatus.ACTIVE, 1.2),
-                Employee(103, "Sarah", "S", "IT", EmployeeStatus.ACTIVE, 3.0),
-                Employee(104, "Michael", "M", "Finance", EmployeeStatus.ACTIVE, 0.5),
-                Employee(105, "Emma", "E", "Marketing", EmployeeStatus.ACTIVE, 4.1),
-                Employee(106, "David", "D", "Support", EmployeeStatus.ACTIVE, 2.0)
+                Employee(101, "Andrea", "Sales", EmployeeStatus.ACTIVE, 2.5, "A"),
+                Employee(102, "John", "HR", EmployeeStatus.ACTIVE, 1.2, "J"),
+                Employee(103, "Sarah", "IT", EmployeeStatus.ACTIVE, 3.0, "S"),
+                Employee(104, "Michael", "Finance", EmployeeStatus.ACTIVE, 0.5, "M"),
+                Employee(105, "Emma", "Marketing", EmployeeStatus.ACTIVE, 4.1, "E"),
+                Employee(106, "David", "Support", EmployeeStatus.ACTIVE, 2.0, "D")
             )
 
             // Circular Employee Selector
@@ -234,9 +235,10 @@ fun EmployeesScreen(viewModel: MainViewModel, navController: NavController) {
         }
     }
 }
+}
 
 @Composable
-fun FilterChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
+fun EmployeeFilterChip(label: String, isSelected: Boolean, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(12.dp),
@@ -330,7 +332,7 @@ fun EmployeeCircularSelector(employees: List<Employee>, onEmployeeClick: (Employ
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EmployeeCard(employee: Employee, onClick: () -> Unit) {
+fun EmployeeListItemCard(employee: Employee, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
@@ -371,7 +373,7 @@ fun EmployeeCard(employee: Employee, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
-                StatusChip(employee.status)
+                EmployeeStatusChip(employee.status)
             }
             Column(horizontalAlignment = Alignment.End) {
                 Surface(
@@ -398,7 +400,7 @@ fun EmployeeCard(employee: Employee, onClick: () -> Unit) {
 }
 
 @Composable
-fun StatusChip(status: EmployeeStatus) {
+fun EmployeeStatusChip(status: EmployeeStatus) {
     val (text, containerColor, contentColor) = when (status) {
         EmployeeStatus.ACTIVE -> Triple("Active", Color(0xFFE8F5E9), Color(0xFF2E7D32))
         EmployeeStatus.ON_BREAK -> Triple("On Break", Color(0xFFFFF3E0), Color(0xFFEF6C00))
