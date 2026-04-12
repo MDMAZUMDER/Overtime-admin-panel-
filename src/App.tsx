@@ -212,16 +212,6 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Android Status Bar Simulation */}
-      <div className="h-8 w-full bg-surface flex items-center justify-between px-6 shrink-0 z-30">
-        <span className="text-[10px] font-bold text-on-surface">9:41</span>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 border border-on-surface rounded-sm"></div>
-          <div className="w-3 h-3 bg-on-surface rounded-full"></div>
-          <div className="w-4 h-2 bg-on-surface rounded-sm"></div>
-        </div>
-      </div>
-
       {/* Top App Bar */}
       <header className="h-16 bg-surface/80 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-10">
         <div className="flex items-center gap-3">
