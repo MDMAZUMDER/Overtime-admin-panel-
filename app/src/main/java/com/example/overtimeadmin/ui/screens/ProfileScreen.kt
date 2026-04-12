@@ -11,6 +11,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Business
+import androidx.compose.material.icons.filled.AccountTree
+import androidx.compose.material.icons.filled.Gavel
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -72,7 +79,7 @@ fun ProfileScreen(snackbarHostState: SnackbarHostState) {
                 SettingsSection(
                     title = "Security & Access",
                     items = listOf(
-                        SettingItemData("Admin Users", "Manage system administrators", Icons.Default.AdminPanelSettings),
+                        SettingItemData("Admin Users", "Manage system administrators", Icons.Default.Settings),
                         SettingItemData("Audit Logs", "View system activity history", Icons.Default.History),
                         SettingItemData("Permissions", "Configure role-based access", Icons.Default.Lock)
                     )
