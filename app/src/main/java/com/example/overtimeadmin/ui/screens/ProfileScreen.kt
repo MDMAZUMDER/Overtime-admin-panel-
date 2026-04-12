@@ -10,15 +10,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.filled.Logout
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Brush
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Message
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,11 +75,11 @@ fun ProfileScreen(snackbarHostState: SnackbarHostState) {
                 horizontalArrangement = Arrangement.End
             ) {
                 IconButton(onClick = { }) {
-                    Icon(Icons.Default.FavoriteBorder, contentDescription = null, tint = Color.White)
+                    Icon(Icons.Default.Favorite, contentDescription = null, tint = Color.White)
                 }
                 Box {
                     IconButton(onClick = { }) {
-                        Icon(Icons.Default.ShoppingBag, contentDescription = null, tint = Color.White)
+                        Icon(Icons.Default.List, contentDescription = null, tint = Color.White)
                     }
                     Box(
                         modifier = Modifier
@@ -135,9 +135,9 @@ fun ProfileScreen(snackbarHostState: SnackbarHostState) {
         ) {
             ProfileMenuGroup(
                 listOf(
-                    MenuItemData("Account", Icons.Default.Group),
-                    MenuItemData("Theme", Icons.Default.Palette),
-                    MenuItemData("Language", Icons.Default.Language)
+                    MenuItemData("Account", Icons.Default.Person),
+                    MenuItemData("Theme", Icons.Default.Brush),
+                    MenuItemData("Language", Icons.Default.Public)
                 ),
                 onItemClick = { scope.launch { snackbarHostState.showSnackbar("$it clicked") } }
             )
@@ -151,7 +151,7 @@ fun ProfileScreen(snackbarHostState: SnackbarHostState) {
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBA1A1A)),
                 shape = RoundedCornerShape(24.dp)
             ) {
-                Icon(Icons.Default.Logout, contentDescription = null)
+                Icon(Icons.Default.ExitToApp, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("Logout", fontWeight = FontWeight.Bold)
             }
@@ -189,7 +189,7 @@ fun ProfileMenuGroup(items: List<MenuItemData>, onItemClick: (String) -> Unit) {
                     },
                     trailingContent = { 
                         Icon(
-                            Icons.Default.ChevronRight, 
+                            Icons.Default.ArrowForward, 
                             contentDescription = null, 
                             tint = Color.LightGray,
                             modifier = Modifier.size(20.dp)

@@ -162,21 +162,21 @@ fun EmployeeDetailScreen(
 
                 // Overview Items
                 OverviewItem(
-                    icon = Icons.Default.ArrowUpward,
+                    icon = Icons.Default.ArrowForward,
                     label = "Sent",
                     subLabel = "Sending Payment to Clients",
                     amount = "$150"
                 )
                 Spacer(Modifier.height(16.dp))
                 OverviewItem(
-                    icon = Icons.Default.ArrowDownward,
+                    icon = Icons.Default.ArrowBack,
                     label = "Receive",
                     subLabel = "Receiving Salary from company",
                     amount = "$250"
                 )
                 Spacer(Modifier.height(16.dp))
                 OverviewItem(
-                    icon = Icons.Default.CreditCard,
+                    icon = Icons.Default.AccountBalance,
                     label = "Loan",
                     subLabel = "Loan for the Car",
                     amount = "$400"

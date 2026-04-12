@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -70,7 +70,7 @@ fun ApprovalsScreen(viewModel: MainViewModel, navController: NavController) {
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                Icons.Default.CheckCircle, 
+                                Icons.Default.Check, 
                                 contentDescription = null,
                                 modifier = Modifier.size(64.dp),
                                 tint = Color(0xFF2E7D32)

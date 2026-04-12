@@ -14,12 +14,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.filled.PendingActions
-import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material.icons.filled.PictureAsPdf
-import androidx.compose.material.icons.filled.SupportAgent
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -84,14 +83,14 @@ fun HomeScreen(viewModel: MainViewModel, navController: NavController, snackbarH
                         SummaryCard(
                             title = "Pending",
                             value = pendingRequests.size.toString(),
-                            icon = Icons.Default.PendingActions,
+                            icon = Icons.Default.List,
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             modifier = Modifier.weight(1f)
                         )
                         SummaryCard(
                             title = "Total Hours",
                             value = String.format("%.1f", totalHours),
-                            icon = Icons.Default.Timer,
+                            icon = Icons.Default.Schedule,
                             containerColor = MaterialTheme.colorScheme.secondaryContainer,
                             modifier = Modifier.weight(1f)
                         )
@@ -269,10 +268,10 @@ fun QuickActionsSection(onActionClick: (String) -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             val actions = listOf(
-                "Add Employee" to Icons.Default.PersonAdd,
-                "Export PDF" to Icons.Default.PictureAsPdf,
+                "Add Employee" to Icons.Default.Person,
+                "Export PDF" to Icons.Default.Description,
                 "Settings" to Icons.Default.Settings,
-                "Support" to Icons.Default.SupportAgent
+                "Support" to Icons.Default.Face
             )
             items(actions) { (label, icon) ->
                 ActionChip(label, icon, onClick = { onActionClick(label) })
@@ -395,7 +394,7 @@ fun SwipeableRequestItem(
                     )
                 }
                 Icon(
-                    Icons.Default.ChevronRight, 
+                    Icons.Default.ArrowForward, 
                     contentDescription = null, 
                     tint = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                 )
