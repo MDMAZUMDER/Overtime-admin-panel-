@@ -40,6 +40,7 @@ export default function App() {
   const [showPinLock, setShowPinLock] = useState(false);
   const [isAppLocked, setIsAppLocked] = useState(false);
   const [enteredPin, setEnteredPin] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { t, isRTL } = useTranslation();
 
   useEffect(() => {
@@ -65,17 +66,23 @@ export default function App() {
   }, []);
 
   const handleLogin = async () => {
+    if (isLoggingIn) return;
+    setIsLoggingIn(true);
     try {
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({ prompt: 'select_account' });
       await signInWithPopup(auth, provider);
     } catch (error: any) {
       console.error("Login failed", error);
-      if (error.code === 'auth/unauthorized-domain') {
-        alert("This domain is not authorized in Firebase. Please add this URL to your Firebase Console > Authentication > Settings > Authorized Domains.");
+      if (error.code === 'auth/popup-closed-by-user') {
+        alert("Login window was closed. Please try again and keep the window open until login is complete.");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert("This domain is not authorized. Please ensure both dev and pre URLs are added to Firebase Authorized Domains.");
       } else {
         alert("Login failed: " + error.message);
       }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -136,10 +143,19 @@ export default function App() {
           <p className="text-on-surface-variant mb-8">Native Overtime Control</p>
           <button 
             onClick={handleLogin}
-            className="w-full bg-brand text-white py-4 rounded-full font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg"
+            disabled={isLoggingIn}
+            className={`w-full bg-brand text-white py-4 rounded-full font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg ${isLoggingIn ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            <UserCircle className="w-5 h-5" />
-            Sign in with Google
+            {isLoggingIn ? (
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+              />
+            ) : (
+              <UserCircle className="w-5 h-5" />
+            )}
+            {isLoggingIn ? 'Connecting...' : 'Sign in with Google'}
           </button>
         </motion.div>
       </div>
