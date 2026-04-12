@@ -40,6 +40,7 @@ export default function App() {
   const [showPinLock, setShowPinLock] = useState(false);
   const [isAppLocked, setIsAppLocked] = useState(false);
   const [enteredPin, setEnteredPin] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { t, isRTL } = useTranslation();
 
@@ -67,13 +68,14 @@ export default function App() {
 
   const handleLogin = async () => {
     if (isLoggingIn) return;
+    setLoginError(null);
     
     // Check if storage is accessible
     try {
       localStorage.setItem('auth_test', '1');
       localStorage.removeItem('auth_test');
     } catch (e) {
-      alert("Your browser is blocking storage access. Please disable 'Block Third-party Cookies' or 'Prevent Cross-site Tracking' in your browser settings.");
+      setLoginError("STORAGE_BLOCKED");
       return;
     }
 
@@ -89,16 +91,13 @@ export default function App() {
       const errorMessage = error.message;
       
       if (errorCode === 'auth/unauthorized-domain') {
-        alert(`Domain Not Authorized. Please add this domain to Firebase: ${window.location.hostname}`);
+        setLoginError(`DOMAIN_NOT_AUTHORIZED|${window.location.hostname}`);
       } else if (errorCode === 'auth/operation-not-allowed') {
-        alert("Google Sign-in is not enabled in your Firebase Console. Please go to Authentication > Sign-in method and enable Google.");
-      } else if (errorMessage.includes('missing initial state') || errorCode === 'auth/internal-error') {
-        const confirmNewTab = window.confirm("Login failed due to browser restrictions. Would you like to open the app in a new tab to fix this?");
-        if (confirmNewTab) {
-          window.open(window.location.href, '_blank');
-        }
-      } else {
-        alert(`Login Error (${errorCode}): ${errorMessage}`);
+        setLoginError("GOOGLE_NOT_ENABLED");
+      } else if (errorMessage.includes('missing initial state') || errorCode === 'auth/internal-error' || errorCode === 'auth/popup-blocked') {
+        setLoginError("STORAGE_RESTRICTION");
+      } else if (errorCode !== 'auth/popup-closed-by-user') {
+        setLoginError(`GENERAL_ERROR|${errorMessage}`);
       }
     } finally {
       setIsLoggingIn(false);
@@ -160,6 +159,46 @@ export default function App() {
           </div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">OT Manager</h1>
           <p className="text-on-surface-variant mb-8">Native Overtime Control</p>
+          
+          <AnimatePresence>
+            {loginError && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl text-left"
+              >
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                  <div className="space-y-2">
+                    <p className="text-sm font-bold text-red-800 dark:text-red-200">
+                      {loginError === 'STORAGE_RESTRICTION' || loginError === 'STORAGE_BLOCKED' 
+                        ? 'Login Blocked by Browser' 
+                        : 'Login Failed'}
+                    </p>
+                    <p className="text-xs text-red-700 dark:text-red-300 leading-relaxed">
+                      {loginError === 'STORAGE_RESTRICTION' || loginError === 'STORAGE_BLOCKED'
+                        ? 'Your browser is preventing login inside this app. Please use the button below to open in a regular browser tab.'
+                        : loginError.startsWith('DOMAIN_NOT_AUTHORIZED')
+                        ? `Domain ${loginError.split('|')[1]} is not authorized in Firebase.`
+                        : 'An unexpected error occurred. Please try again.'}
+                    </p>
+                    {(loginError === 'STORAGE_RESTRICTION' || loginError === 'STORAGE_BLOCKED') && (
+                      <a 
+                        href={window.location.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-xs font-black text-red-900 dark:text-red-100 underline decoration-2 underline-offset-4"
+                      >
+                        Open in Browser Tab <ChevronRight className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <button 
             onClick={handleLogin}
             disabled={isLoggingIn}
